@@ -4,23 +4,23 @@
       <!-- Logo y marca -->
       <RouterLink class="link-navbar home" to="/" @click="closeMobileMenu">
         <div class="brand-container">
+          <img src="/images/Logo1.jpeg" alt="Logo" class="brand-logo" />
           <div class="brand-info">
-            <div class="brand-title">DigitalWallpapers<span class="highlight">Moto</span></div>
+            <div class="brand-title">APPLE STORE <span class="highlight">PRO</span></div>
           </div>
         </div>
       </RouterLink>
 
       <!-- Navegación principal -->
       <div class="nav-menu desktop-nav">
-        <a href="#numbers" class="nav-link" @click="closeMobileMenu(); scrollToNumbers()">Elige Ahora</a>
-        <a href="#faq" class="nav-link " @click="closeMobileMenu">¿Preguntas?</a>
+        <a href="#products" class="nav-link" @click="closeMobileMenu(); scrollToProductStore()">Compra Ahora</a>
+        <a href="#contact" class="nav-link" @click="closeMobileMenu(); scrollToContact()">Contáctanos</a>
       </div>
 
       <!-- Controles de usuario -->
       <div class="nav-controls desktop-nav">
         <RouterLink v-if="!isLoggedIn" class="btn access-btn" to="/login">Acceder</RouterLink>
-        <RouterLink v-if="isLoggedIn && isAdmin" class="btn admin-btn" to="/admin">⚙️ Dinámica</RouterLink>
-        <RouterLink v-if="isLoggedIn" class="btn purchases-btn" to="/compras">🧾 Compras</RouterLink>
+        <RouterLink v-if="isLoggedIn && isAdmin" class="btn admin-btn" to="/admin/products">⚙️ Panel Admin</RouterLink>
         <RouterLink v-if="isLoggedIn" @click="logout" class="btn logout-btn" to="/">Cerrar sesión</RouterLink>
         <div v-if="isLoggedIn" class="user-greeting">
           <span>{{ username }}</span>
@@ -38,8 +38,8 @@
       <div class="mobile-menu" :class="{ 'active': isMobileMenuOpen }">
         <div class="mobile-menu-content">
           <div class="mobile-nav-links">
-            <a href="#numbers" class="mobile-link" @click="closeMobileMenu; scrollToNumbers()">Números</a>
-            <a href="#compartir" class="mobile-link" @click="closeMobileMenu">Compartir</a>
+            <a href="#products" class="mobile-link" @click="closeMobileMenu(); scrollToProductStore()">Compra Ahora</a>
+            <a href="#contact" class="mobile-link" @click="closeMobileMenu(); scrollToContact()">Contáctanos</a>
           </div>
 
           <div class="mobile-controls">
@@ -49,8 +49,8 @@
             <div v-if="isLoggedIn" class="mobile-user-greeting">
               <span>Hola, {{ username }}</span>
             </div>
-            <RouterLink v-if="isLoggedIn && isAdmin" class="mobile-btn admin-btn" to="/admin" @click="closeMobileMenu">
-              ⚙️ Dinámica
+            <RouterLink v-if="isLoggedIn && isAdmin" class="mobile-btn admin-btn" to="/admin/products" @click="closeMobileMenu">
+              ⚙️ Panel Admin
             </RouterLink>
             <RouterLink v-if="isLoggedIn" class="mobile-btn purchases-btn" to="/compras" @click="closeMobileMenu">
               🧾 Compras
@@ -93,11 +93,22 @@ const closeMobileMenu = () => {
   isMobileMenuOpen.value = false;
 };
 
-// Función para hacer scroll a la sección de números
-const scrollToNumbers = () => {
-  const numbersSection = document.getElementById('number-selection');
-  if (numbersSection) {
-    numbersSection.scrollIntoView({
+// Función para hacer scroll a la sección de productos
+const scrollToProductStore = () => {
+  const productStoreSection = document.querySelector('.product-store');
+  if (productStoreSection) {
+    productStoreSection.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+};
+
+// Función para hacer scroll a la sección de contacto
+const scrollToContact = () => {
+  const contactSection = document.querySelector('.contact-section');
+  if (contactSection) {
+    contactSection.scrollIntoView({
       behavior: 'smooth',
       block: 'start'
     });
@@ -133,7 +144,7 @@ watch(route, () => {
 
 <style scoped>
 .navbar {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  background: var(--brand-gradient);
   margin: 0;
   width: 100%;
   display: flex;
@@ -156,22 +167,37 @@ watch(route, () => {
   gap: 12px;
 }
 
+.brand-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--brand-accent-alt);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+
+.brand-logo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3), 0 0 0 1px var(--brand-accent);
+}
+
 .logo-circle {
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  background: var(--brand-accent-gradient);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 24px;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 15px var(--brand-accent-glow);
   transition: all 0.3s ease;
 }
 
 .logo-circle:hover {
   transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+  box-shadow: 0 6px 20px var(--brand-accent-glow);
 }
 
 .brand-info {
@@ -183,14 +209,13 @@ watch(route, () => {
 .brand-title {
   font-size: 20px;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--brand-primary-contrast);
   line-height: 1.2;
   margin: 0;
 }
 
 .brand-title .highlight {
-  color: #60a5fa;
-  text-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+  color: #26F7D7;
 }
 
 .brand-subtitle {
@@ -211,7 +236,7 @@ watch(route, () => {
 }
 
 .nav-link {
-  color: #e2e8f0;
+  color: var(--brand-accent-alt);
   text-decoration: none;
   font-weight: 500;
   font-size: 16px;
@@ -222,8 +247,8 @@ watch(route, () => {
 }
 
 .nav-link:hover {
-  color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--brand-primary-contrast);
+  background-color: rgba(255, 255, 255, 0.08);
   transform: translateY(-1px);
 }
 
@@ -286,35 +311,36 @@ watch(route, () => {
 }
 
 .admin-btn {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
   color: #ffffff;
-  box-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 2px 10px rgba(6, 182, 212, 0.3);
 }
 
 .admin-btn:hover {
-  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.5);
+  background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.5);
   transform: translateY(-2px);
 }
 
 .purchases-btn {
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  background: var(--brand-accent-gradient);
   color: #ffffff;
-  box-shadow: 0 2px 10px rgba(96, 165, 250, 0.3);
+  box-shadow: 0 2px 10px var(--brand-accent-glow);
 }
 
 .purchases-btn:hover {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  box-shadow: 0 4px 15px rgba(96, 165, 250, 0.5);
+  background: var(--brand-accent-gradient);
+  filter: brightness(1.1);
+  box-shadow: 0 4px 15px var(--brand-accent-glow);
   transform: translateY(-2px);
 }
 
 .user-greeting {
-  color: #e2e8f0;
+  color: var(--brand-accent-alt);
   font-weight: 600;
   font-size: 14px;
   padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   backdrop-filter: blur(10px);
 }
@@ -338,7 +364,7 @@ watch(route, () => {
   display: block;
   height: 3px;
   width: 100%;
-  background-color: #ffffff;
+  background-color: var(--brand-primary-contrast);
   border-radius: 3px;
   transition: all 0.3s ease;
 }
@@ -363,7 +389,7 @@ watch(route, () => {
   left: 0;
   width: 100%;
   height: calc(100vh - 70px);
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  background: var(--brand-gradient);
   transform: translateX(-100%);
   transition: transform 0.3s ease;
   z-index: 999;
@@ -437,9 +463,9 @@ watch(route, () => {
 }
 
 .mobile-btn.admin-btn {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
   color: #ffffff;
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
 }
 
 .mobile-btn.purchases-btn {
@@ -482,6 +508,11 @@ watch(route, () => {
     font-size: 18px;
   }
 
+  .brand-logo {
+    width: 42px;
+    height: 42px;
+  }
+
   .brand-subtitle {
     font-size: 11px;
   }
@@ -504,6 +535,11 @@ watch(route, () => {
 
   .brand-title {
     font-size: 16px;
+  }
+
+  .brand-logo {
+    width: 38px;
+    height: 38px;
   }
 
   .logo-circle {

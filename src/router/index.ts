@@ -27,23 +27,17 @@ const router = createRouter({
         requiresGuest: true, // Solo accesible cuando no está autenticado
       },
     },
+
     {
-      path: '/admin',
-      name: 'admin-dashboard',
-      component: () => import('../views/AdminDashboard.vue'),
+      path: '/admin/products',
+      name: 'admin-products',
+      component: () => import('../views/AdminDashboardNew.vue'),
       meta: {
         requiresAuth: true,
         requiredRole: 'admin', // Solo accesible para administradores
       },
     },
-    {
-      path: '/compras',
-      name: 'purchases-dashboard',
-      component: () => import('../views/PurchasesDashboard.vue'),
-      meta: {
-        requiresAuth: true, // Accesible para cualquier usuario autenticado
-      },
-    },
+
     {
       path: '/payment/success',
       name: 'payment-success',
@@ -53,6 +47,11 @@ const router = createRouter({
       path: '/payment/failure',
       name: 'payment-failure',
       component: () => import('../views/PaymentFailure.vue'),
+    },
+    {
+      path: '/test-sync',
+      name: 'test-sync',
+      component: () => import('../views/TestSync.vue'),
     },
     {
       path: '/payment/pending',
@@ -72,6 +71,12 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const isAuthenticated = authService.isAuthenticated()
   const userRole = authService.getUserRole()
+
+  // Redirigir admins autenticados que intenten ir al login
+  if (to.path === '/login' && isAuthenticated && userRole === 'admin') {
+    next('/admin/products')
+    return
+  }
 
   // Si la ruta requiere estar autenticado
   if (to.meta.requiresAuth) {
@@ -98,8 +103,12 @@ router.beforeEach((to, from, next) => {
 
   // Si la ruta requiere ser invitado (no autenticado)
   if (to.meta.requiresGuest && isAuthenticated) {
-    // Redirigir a home si ya está autenticado
-    next('/')
+    // Si es invitado y autenticado: si es admin va a panel, si no a home
+    if (userRole === 'admin') {
+      next('/admin/products')
+    } else {
+      next('/')
+    }
     return
   }
 

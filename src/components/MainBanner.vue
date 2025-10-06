@@ -1,459 +1,857 @@
 <template>
-  <section class="hero-rifa">
-    <!-- Galería de fotos de la moto -->
-    <div class="moto-gallery-section">
-      <div class="gallery-container">
-        <div class="gallery-header">
-          <h1>Adquiere tus <span class="highlight-blue">DigitalWallpapers</span></h1>
-          <h1></h1>
-        </div>
-
-        <!-- Galería horizontal en .horizontal-gallery -->
-        <div
-          class="horizontal-gallery"
-          ref="galleryRef"
-          @touchstart="handleTouchStart"
-          @touchmove="handleTouchMove"
-          @touchend="handleTouchEnd"
-        >
-          <div
-            v-for="(image, index) in motoImages"
-            :key="index"
-            class="gallery-image-item"
-            :class="{ 'active': currentImageIndex === index }"
-            @click="goToImage(index)">
-            <div class="image-wrapper">
-              <img :src="image.src"  />
-              <div class="image-overlay">
-                <div class="image-info">
-                  <h3>{{ image.title }}</h3>
-
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-
-        <!-- Navegación con flechas a los lados -->
-        <div class="gallery-navigation">
-          <button class="gallery-nav-arrow gallery-prev" @click="prevImage">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="15,18 9,12 15,6"></polyline>
-            </svg>
-          </button>
-          <button class="gallery-nav-arrow gallery-next" @click="nextImage">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="9,18 15,12 9,6"></polyline>
-            </svg>
-          </button>
- <!-- Sección de modificaciones de la moto (colocada debajo de la galería) -->
-          <div class="moto-modifications" ref="motoModRef">
-            <div class="moto-modifications-inner" ref="motoInnerRef">
-              <p class="modifications-description">
-                Esta <span class="highlight-text">Motocicleta</span> incluye:
-                <strong>Cúpula Nueva, Retrovisores Nuevos, Tapas Laterales Nuevas y Emblemas Nuevos.</strong>
-              </p>
-            </div>
-          </div>
-        </div>
-
-
-
-
-
-        <!-- Contenido centrado debajo de la galería -->
-        <div class="content-wrapper">
-
-
-
-
-          <!-- Botones de acción -->
-          <div class="action-buttons">
-            <button class="btn-primary" @click="selectNumbers">Elegir números</button>
-            <button class="btn-secondary" @click="viewRules">Ver reglas</button>
-          </div>
-           <!-- Estadísticas -->
-          <div class="stats-section stats-centered">
-            <div class="stat-card">
-              <div class="stat-value">$ 15.000 COP</div>
-              <div class="stat-label">por número</div>
-            </div>
-          <!-- <div class="stat-card">
-            <div class="stat-value">{{ availabilityText }}</div>
-            <div class="stat-label">disponibles</div>
-          </div> -->
-        </div>
-        </div> <!-- Cierre content-wrapper -->
+  <section class="hero-carousel">
+    <!-- Carrusel de Imágenes -->
+    <div class="carousel-container">
+      <div
+        v-for="(slide, index) in slides"
+        :key="index"
+        class="carousel-slide"
+        :class="{ 'active': currentSlide === index }"
+      >
+        <img :src="slide.image" :alt="slide.title" />
+        <div class="slide-overlay"></div>
       </div>
+    </div>
+
+    <!-- Botón Conocer Más Estratégico -->
+    <div class="explore-button-container">
+      <button class="btn-explore" @click="exploreProduct(slides[currentSlide])">
+        Conocer más
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Navegación -->
+    <div class="carousel-navigation">
+      <div class="nav-dots">
+        <button
+          v-for="(_, index) in slides"
+          :key="index"
+          @click="goToSlide(index)"
+          :class="['nav-dot', { 'active': currentSlide === index }]"
+        >
+        </button>
+      </div>
+      <div class="nav-arrows">
+        <button @click="previousSlide" class="nav-arrow prev">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+        </button>
+        <button @click="nextSlide" class="nav-arrow next">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Indicador de Progreso -->
+    <div class="progress-indicator">
+      <div class="progress-bar" :style="{ width: progressWidth + '%' }"></div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useNumbersAvailability } from '@/composables/useNumbersAvailability'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
-// Definir emits
-interface Emits {
-  (e: 'showRules'): void
+// Tipos
+interface ProductSlide {
+  image: string
+  category: string
+  title: string
+  description: string
+  features: string[]
+  id: string
 }
 
-const emit = defineEmits<Emits>()
+// Estado del carrusel
+const currentSlide = ref(0)
+const autoPlayInterval = ref<ReturnType<typeof setInterval> | null>(null)
+const isPlaying = ref(true)
 
-// Usar el composable de disponibilidad
-const {
-  // availabilityText,
-  // getAvailableNumbersArray
-} = useNumbersAvailability()
-
-// // Función para simular más ventas (demo)
-// const simulateMoreSales = () => {
-//   const available = getAvailableNumbersArray()
-//   if (available.length > 5) {
-//     // Simular venta de 3-7 números aleatorios
-//     const numToSell = Math.floor(Math.random() * 5) + 3
-//     const soldNumbers = []
-
-//     for (let i = 0; i < numToSell && i < available.length; i++) {
-//       const randomIndex = Math.floor(Math.random() * available.length)
-//       soldNumbers.push(available[randomIndex])
-//       addTakenNumber(available[randomIndex])
-//       available.splice(randomIndex, 1)
-//     }
-
-//     alert(`Demo: Se simuló la venta de ${soldNumbers.length} números: ${soldNumbers.join(', ')}`)
-//   } else {
-//     alert('Demo: No hay suficientes números disponibles para simular más ventas')
-//   }
-// }
-
-// // Función para resetear la demo
-// const resetDemo = () => {
-//   resetToDefaults()
-//   alert('Demo: Números resetados a los valores por defecto')
-// }
-
-// // Función para limpiar la demo
-// const clearDemo = () => {
-//   if (confirm('¿Estás seguro de que quieres limpiar todos los números reservados?')) {
-//     clearAllReserved()
-//     alert('Demo: Todos los números han sido liberados')
-//   }
-// }
-
-// Datos de las imágenes de la moto
-const motoImages = ref([
+// Datos de productos Apple (fácil de expandir)
+const slides = ref<ProductSlide[]>([
   {
-    src: '/images/ns200_slide1.jpeg',
-    title: 'Moto NS200s',
+    id: 'iphone',
+    image: '/images/banner1.jpg',
+    category: 'iPhone',
+    title: 'iPhone 15 Pro',
+    description: 'El iPhone más Pro hasta ahora. Con titanio de grado aeroespacial y el chip A17 Pro más potente.',
+    features: ['Titanio', 'Cámara 48MP', 'USB-C', 'Action Button']
   },
   {
-    src: '/images/ns200_slide2.jpeg',
-    title: 'Diseño agresivo frontal',
+    id: 'ipad',
+    image: '/images/banner4.jpg',
+    category: 'iPad',
+    title: 'iPad Pro M2',
+    description: 'Versatilidad extrema con el poder del chip M2. Diseño delgado y potencia profesional.',
+    features: ['M2 Chip', 'Liquid Retina XDR', 'Apple Pencil 2', 'Thunderbolt / USB 4']
   },
   {
-    src: '/images/ns200_slide3.jpg',
-    title: 'Perfil deportivo completo',
-  },
-  {
-    src: '/images/ns200_slide4.jpeg',
-    title: 'Diseño deportivo',
-  },
-  {
-    src: '/images/ns200_slide5.jpg',
-    title: 'Alta tecnología',
-  },
-  {
-    src: '/images/ns200_slide6.jpg',
-    title: 'Tecnología avanzada',
-  },
-  {
-    src: '/images/ns200_slide7.jpeg',
-    title: 'Sistema amigable',
+    id: 'macbook',
+    image: '/images/banner3.jpg',
+    category: 'Mac',
+    title: 'MacBook Pro M3',
+    description: 'Potencia profesional redefinida. Rendimiento extraordinario para los flujos de trabajo más exigentes.',
+    features: ['Chip M3', '22h batería', 'Pantalla Liquid Retina XDR', 'Thunderbolt 4']
   }
 ])
 
-const currentImageIndex = ref(0)
-const galleryRef = ref<HTMLElement | null>(null)
-const motoModRef = ref<HTMLElement | null>(null)
-const motoInnerRef = ref<HTMLElement | null>(null)
-// Listeners que se asignan en onMounted para poder limpiarlos en onUnmounted
-let onGalleryScroll: (() => void) | null = null
-let onResize: (() => void) | null = null
-
-// Variables para gestos táctiles
-const touchStartX = ref(0)
-const touchStartY = ref(0)
-const isDragging = ref(false)
-const startScrollLeft = ref(0)
-const lastTouchX = ref(0)
-const lastTouchTime = ref(0)
-const velocityX = ref(0)
-
-// Funciones para el carousel de imágenes con scroll horizontal optimizado
-const nextImage = () => {
-  if (galleryRef.value) {
-    const isMobile = window.innerWidth <= 768
-    const scrollAmount = isMobile ? galleryRef.value.clientWidth * 0.85 : 420
-
-    // Scroll más rápido y directo para botones
-    galleryRef.value.scrollBy({
-      left: scrollAmount,
-      behavior: 'auto' // Cambio a auto para scroll inmediato
-    })
-
-    // Actualizar índice si es mobile
-    if (isMobile) {
-      const newIndex = Math.min(currentImageIndex.value + 1, motoImages.value.length - 1)
-      currentImageIndex.value = newIndex
-    }
-  }
-}
-
-const prevImage = () => {
-  if (galleryRef.value) {
-    const isMobile = window.innerWidth <= 768
-    const scrollAmount = isMobile ? galleryRef.value.clientWidth * 0.85 : 420
-
-    // Scroll más rápido y directo para botones
-    galleryRef.value.scrollBy({
-      left: -scrollAmount,
-      behavior: 'auto' // Cambio a auto para scroll inmediato
-    })
-
-    // Actualizar índice si es mobile
-    if (isMobile) {
-      const newIndex = Math.max(currentImageIndex.value - 1, 0)
-      currentImageIndex.value = newIndex
-    }
-  }
-}
-
-// Utilidades de métrica y animación para snap
-const getGalleryMetrics = () => {
-  const el = galleryRef.value
-  if (!el) return { item: 0, gap: 0, pad: 0 }
-  const firstItem = el.querySelector('.gallery-image-item') as HTMLElement | null
-  const styles = window.getComputedStyle(el)
-  const gap = parseFloat(styles.columnGap || styles.gap || '0') || 0
-  const pad = parseFloat(styles.paddingLeft || '0') || 0
-  const item = firstItem ? firstItem.clientWidth : 0
-  return { item, gap, pad }
-}
-
-const animateScrollTo = (targetLeft: number, duration = 450) => {
-  const el = galleryRef.value
-  if (!el) return
-  const start = el.scrollLeft
-  const dist = targetLeft - start
-  const startTime = performance.now()
-  const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3)
-  const step = (now: number) => {
-    const p = Math.min(1, (now - startTime) / duration)
-    el.scrollLeft = start + dist * easeOutCubic(p)
-    if (p < 1) requestAnimationFrame(step)
-  }
-  requestAnimationFrame(step)
-}
-
-// Funciones para gestos táctiles con arrastre y snap
-const handleTouchStart = (e: TouchEvent) => {
-  if (!galleryRef.value) return
-  const touch = e.touches[0]
-  touchStartX.value = touch.clientX
-  touchStartY.value = touch.clientY
-  lastTouchX.value = touch.clientX
-  lastTouchTime.value = performance.now()
-  isDragging.value = true
-  startScrollLeft.value = galleryRef.value.scrollLeft
-  // Desactivar snap y smooth durante el drag para seguir el dedo
-  galleryRef.value.style.scrollSnapType = 'none'
-  galleryRef.value.style.scrollBehavior = 'auto'
-}
-
-const handleTouchMove = (e: TouchEvent) => {
-  if (!isDragging.value || !galleryRef.value) return
-  const touch = e.touches[0]
-  const dx = touch.clientX - touchStartX.value
-  const dy = Math.abs(touch.clientY - touchStartY.value)
-  // Si el gesto es predominantemente horizontal, prevenimos el scroll vertical
-  if (Math.abs(dx) > dy) {
-    e.preventDefault()
-    galleryRef.value.scrollLeft = startScrollLeft.value - dx
-  }
-  // Calcular velocidad aproximada
-  const now = performance.now()
-  const dt = now - lastTouchTime.value
-  if (dt > 0) velocityX.value = (touch.clientX - lastTouchX.value) / dt
-  lastTouchX.value = touch.clientX
-  lastTouchTime.value = now
-}
-
-const handleTouchEnd = () => {
-  if (!galleryRef.value) return
-  isDragging.value = false
-  // Rehabilitar snap visual tras calcular destino
-  const el = galleryRef.value
-  const { item, gap, pad } = getGalleryMetrics()
-  const unit = item + gap
-  // Ajustar posición relativa descontando padding
-  const raw = Math.max(0, el.scrollLeft - pad)
-  let targetIndex = unit > 0 ? Math.round(raw / unit) : currentImageIndex.value
-  targetIndex = Math.max(0, Math.min(targetIndex, (motoImages.value?.length || 1) - 1))
-  const targetLeft = pad + targetIndex * unit
-  // Animar al destino y luego restaurar propiedades
-  animateScrollTo(targetLeft, 450)
-  // Actualizamos índice
-  currentImageIndex.value = targetIndex
-  // Restaurar snap (dejar que CSS tome control después de la animación)
-  setTimeout(() => {
-    if (galleryRef.value) {
-      galleryRef.value.style.scrollSnapType = ''
-      galleryRef.value.style.scrollBehavior = ''
-    }
-  }, 460)
-}
-
-const goToImage = (index: number) => {
-  currentImageIndex.value = index
-
-  // Scroll directo pero suave a la imagen específica
-  if (galleryRef.value) {
-    const isMobile = window.innerWidth <= 768
-    if (isMobile) {
-      // En mobile, calcular posición exacta
-      const imageWidth = galleryRef.value.clientWidth * 0.85
-      const gap = 24 // Gap entre imágenes
-      const scrollPosition = index * (imageWidth + gap)
-
-      galleryRef.value.scrollTo({
-        left: scrollPosition,
-        behavior: 'smooth' // Scroll suave para clicks directos
-      })
-    } else {
-      // En desktop
-      const imageWidth = 400
-      const gap = 32 // Gap entre imágenes en desktop
-      const scrollPosition = index * (imageWidth + gap)
-
-      galleryRef.value.scrollTo({
-        left: scrollPosition,
-        behavior: 'smooth' // Scroll suave para clicks directos
-      })
-    }
-  }
-}
-
-// Datos de los productos
-const products = ref([
-  {
-    name: 'Pulsera Deportiva',
-    image: '/images/ns200_slide1.jpg',
-    description: 'Pulsera deportiva de alta calidad'
-  },
-  {
-    name: 'Pulsera Premium',
-    image: '/images/ns200_slide2.jpg',
-    description: 'Edición premium con materiales especiales'
-  },
-  {
-    name: 'Pulsera Clásica',
-    image: '/images/ns200_slide3.jpg',
-    description: 'Diseño clásico y elegante'
-  }
-])
-
-const currentProductIndex = ref(0)
-const currentProduct = ref(products.value[0])
-
-// Funciones de navegación
-const nextProduct = () => {
-  currentProductIndex.value = (currentProductIndex.value + 1) % products.value.length
-  currentProduct.value = products.value[currentProductIndex.value]
-}
-
-// const prevProduct = () => {
-//   currentProductIndex.value = currentProductIndex.value === 0
-//     ? products.value.length - 1
-//     : currentProductIndex.value - 1
-//   currentProduct.value = products.value[currentProductIndex.value]
-// }
-
-// const goToProduct = (index: number) => {
-//   currentProductIndex.value = index
-//   currentProduct.value = products.value[index]
-// }
-
-// Funciones de acción
-const selectNumbers = () => {
-  // Hacer scroll suave a la sección de selección de números
-  const element = document.getElementById('number-selection')
-  if (element) {
-    element.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    })
-  }
-}
-
-const viewRules = () => {
-  // Emitir evento para abrir modal de reglas
-  emit('showRules')
-}
-
-// Nota: función de video eliminada por no uso
-
-// Navegación con teclado
-const handleKeydown = (event: KeyboardEvent) => {
-  if (event.key === 'ArrowLeft') {
-    prevImage()
-  } else if (event.key === 'ArrowRight') {
-    nextImage()
-  }
-}
-
-onMounted(() => {
-  // Auto-rotación cada 5 segundos
-  setInterval(() => {
-    nextProduct()
-  }, 5000)
-
-  // Agregar listener para teclado
-  window.addEventListener('keydown', handleKeydown)
-  // Sincronizar posición de la sección de modificaciones con el scroll de la galería
-  const syncModPosition = () => {
-    const el = galleryRef.value
-    const inner = motoInnerRef.value
-    if (!el || !inner) return
-  // Ajustar ancho del inner para que se mueva acorde a la galería (área visible)
-  inner.style.width = `${el.clientWidth}px`
-  // Trasladar inner negativamente la misma cantidad de scroll para que parezca que se mueve con la galería
-  inner.style.transform = `translateX(${ -el.scrollLeft }px)`
-  }
-
-  // asignar listeners para limpieza posterior
-  onGalleryScroll = () => syncModPosition()
-  onResize = () => syncModPosition()
-
-  if (galleryRef.value) galleryRef.value.addEventListener('scroll', onGalleryScroll)
-  // Recalcular en resize para mantener alineación
-  window.addEventListener('resize', onResize)
-  // Ejecutar una vez para ajustar posición inicial
-  setTimeout(syncModPosition, 50)
+// Computed
+const progressWidth = computed(() => {
+  return ((currentSlide.value + 1) / slides.value.length) * 100
 })
 
-// Limpiar el listener cuando se desmonte el componente
+// Funciones de navegación
+const nextSlide = () => {
+  currentSlide.value = (currentSlide.value + 1) % slides.value.length
+  resetAutoPlay()
+}
+
+const previousSlide = () => {
+  currentSlide.value = currentSlide.value === 0
+    ? slides.value.length - 1
+    : currentSlide.value - 1
+  resetAutoPlay()
+}
+
+const goToSlide = (index: number) => {
+  currentSlide.value = index
+  resetAutoPlay()
+}
+
+// Auto-play
+const startAutoPlay = () => {
+  if (!isPlaying.value) return
+  autoPlayInterval.value = setInterval(() => {
+    nextSlide()
+  }, 2000) // Cambia cada 2 segundos
+}
+
+const stopAutoPlay = () => {
+  if (autoPlayInterval.value) {
+    clearInterval(autoPlayInterval.value)
+    autoPlayInterval.value = null
+  }
+}
+
+const resetAutoPlay = () => {
+  stopAutoPlay()
+  setTimeout(() => {
+    startAutoPlay()
+  }, 1000) // Pausa 1 segundo antes de reanudar
+}
+
+// Funciones de producto
+const exploreProduct = (slide: ProductSlide) => {
+  // Scroll hacia la sección ProductShowcase
+  const productShowcaseElement = document.querySelector('.apple-products-showcase');
+  if (productShowcaseElement) {
+    productShowcaseElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+  console.log('Navegando hacia ProductShowcase desde:', slide.title)
+}
+
+// Métodos públicos para control externo
+const pauseCarousel = () => {
+  isPlaying.value = false
+  stopAutoPlay()
+}
+
+const resumeCarousel = () => {
+  isPlaying.value = true
+  startAutoPlay()
+}
+
+// Lifecycle
+onMounted(() => {
+  startAutoPlay()
+})
+
 onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeydown)
-  // Limpiar listener de scroll y resize
-  if (galleryRef.value && onGalleryScroll) galleryRef.value.removeEventListener('scroll', onGalleryScroll)
-  if (onResize) window.removeEventListener('resize', onResize)
+  stopAutoPlay()
+})
+
+// Exposer métodos para uso externo
+defineExpose({
+  nextSlide,
+  previousSlide,
+  goToSlide,
+  pauseCarousel,
+  resumeCarousel,
+  addSlide: (slide: ProductSlide) => {
+    slides.value.push(slide)
+  }
 })
 </script>
 
 <style scoped>
+/* === CARRUSEL INNOVADOR APPLE STORE PRO === */
+.hero-carousel {
+  position: relative;
+  width: 100%;
+  height: 80vh;
+  min-height: 600px;
+  overflow: hidden;
+  border-radius: 0;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
+  background: #000;
+}
+
+/* Contenedor del Carrusel */
+.carousel-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.carousel-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: scale(1.1);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+.carousel-slide.active {
+  opacity: 1;
+  transform: scale(1);
+  z-index: 2;
+}
+
+.carousel-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.7;
+}
+
+/* Overlay simplificado */
+.slide-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.05) 40%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
+  z-index: 3;
+}
+
+/* Contenedor del botón estratégico */
+.explore-button-container {
+  position: absolute;
+  bottom: 5rem;
+  right: 3rem;
+  z-index: 10;
+}
+
+.btn-explore {
+  background: linear-gradient(135deg, #1f2937, #374151);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  padding: 1rem 2.5rem;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.4s ease;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.btn-explore:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, #374151, #4b5563);
+  border-color: rgba(255, 255, 255, 0.3);
+  scale: 1.05;
+}
+
+/* Navegación */
+.carousel-navigation {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-dots {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-dot {
+  position: relative;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: visible;
+}
+
+.nav-dot:hover {
+  background: rgba(255, 255, 255, 0.6);
+  transform: scale(1.2);
+}
+
+.nav-dot.active {
+  background: #60a5fa;
+  transform: scale(1.3);
+  box-shadow: 0 0 15px rgba(96, 165, 250, 0.6);
+}
+
+.nav-arrows {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nav-arrow {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.nav-arrow:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1);
+}
+
+/* Indicador de Progreso */
+.progress-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  z-index: 10;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #60a5fa, #3b82f6);
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+}
+
+/* Animaciones */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-carousel {
+    height: 70vh;
+    min-height: 500px;
+    border-radius: 0;
+  }
+
+  .explore-button-container {
+    bottom: 4rem;
+    right: 2rem;
+  }
+
+  .carousel-navigation {
+    bottom: 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .nav-arrows {
+    display: none; /* Ocultar flechas en móvil */
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-carousel {
+    height: 60vh;
+    min-height: 450px;
+    border-radius: 0;
+  }
+
+  .explore-button-container {
+    bottom: 3rem;
+    right: 1.5rem;
+  }
+
+  .btn-explore {
+    padding: 0.9rem 2rem;
+    font-size: 0.9rem;
+    border-radius: 12px;
+  }  .carousel-navigation {
+    bottom: 1rem;
+  }
+
+  .nav-dots {
+    gap: 0.8rem;
+  }
+}
+.hero-banner {
+  position: relative;
+  width: 100%;
+  height: 70vh;
+  min-height: 500px;
+  overflow: hidden;
+  border-radius: 0 0 24px 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.banner-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.banner-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.5s ease;
+}
+
+.hero-banner:hover .banner-image img {
+  transform: scale(1.02);
+}
+
+.banner-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 0, 0, 0.4) 0%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.3) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.banner-content {
+  text-align: center;
+  color: #ffffff;
+  max-width: 600px;
+  padding: 2rem;
+}
+
+.banner-title {
+  font-size: clamp(3rem, 6vw, 5rem);
+  font-weight: 800;
+  margin: 0 0 1rem 0;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  animation: fadeInUp 1s ease-out;
+}
+
+.banner-title .accent {
+  color: #60a5fa;
+  text-shadow: 0 0 30px rgba(96, 165, 250, 0.6);
+}
+
+.banner-tagline {
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  font-weight: 400;
+  margin: 0;
+  opacity: 0.95;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.05em;
+  animation: fadeInUp 1s ease-out 0.3s both;
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-banner {
+    height: 60vh;
+    min-height: 400px;
+    border-radius: 0 0 16px 16px;
+  }
+
+  .banner-content {
+    padding: 1.5rem;
+  }
+
+  .banner-title {
+    font-size: clamp(2.5rem, 8vw, 3.5rem);
+  }
+
+  .banner-tagline {
+    font-size: clamp(1rem, 4vw, 1.4rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-banner {
+    height: 50vh;
+    min-height: 350px;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .banner-content {
+    padding: 1rem;
+  }
+
+  .banner-title {
+    font-size: clamp(2rem, 10vw, 3rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .banner-tagline {
+    font-size: clamp(0.9rem, 5vw, 1.2rem);
+  }
+}
+.hero-section {
+  position: relative;
+  min-height: 100vh;
+  background: var(--brand-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+.hero-container {
+  max-width: 1200px;
+  width: 100%;
+  text-align: center;
+  z-index: 2;
+}
+
+/* Hero Header */
+.hero-header {
+  margin-bottom: 4rem;
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  color: var(--brand-primary-contrast);
+  margin: 0 0 1rem 0;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.hero-title .accent {
+  color: var(--brand-accent-alt);
+  text-shadow: 0 0 20px var(--brand-accent-glow);
+}
+
+.hero-subtitle {
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  font-weight: 600;
+  color: var(--brand-accent);
+  margin: 0 0 1.5rem 0;
+  letter-spacing: 0.05em;
+}
+
+.hero-tagline {
+  font-size: clamp(1rem, 1.8vw, 1.3rem);
+  color: var(--brand-accent-alt);
+  margin: 0 auto;
+  max-width: 600px;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+/* Product Showcase */
+.product-showcase {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin: 4rem 0;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.product-slide {
+  background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  padding: 2rem;
+  transition: all 0.4s ease;
+  opacity: 0.7;
+  transform: scale(0.95);
+}
+
+.product-slide.active {
+  opacity: 1;
+  transform: scale(1);
+  border-color: var(--brand-accent);
+  box-shadow: 0 12px 40px -8px var(--brand-accent-glow);
+}
+
+.product-image {
+  width: 100%;
+  height: 200px;
+  margin-bottom: 1.5rem;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.05);
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.product-slide:hover .product-image img {
+  transform: scale(1.05);
+}
+
+.product-info h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--brand-primary-contrast);
+  margin: 0 0 0.5rem 0;
+}
+
+.product-info p {
+  font-size: 0.95rem;
+  color: var(--brand-accent-alt);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Navigation Dots */
+.nav-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  margin: 2rem 0;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  background: var(--brand-accent);
+  transform: scale(1.2);
+  box-shadow: 0 0 12px var(--brand-accent-glow);
+}
+
+.dot:hover {
+  background: var(--brand-accent-alt);
+  transform: scale(1.1);
+}
+
+/* Benefits Section */
+.benefits-section {
+  margin: 4rem 0;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.benefit-item {
+  background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  transition: all 0.4s ease;
+}
+
+.benefit-item:hover {
+  transform: translateY(-8px);
+  border-color: rgba(255,255,255,0.16);
+  box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4);
+}
+
+.benefit-icon {
+  width: 60px;
+  height: 60px;
+  background: var(--brand-accent-gradient);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin: 0 auto 1rem;
+  box-shadow: 0 8px 20px -6px var(--brand-accent-glow);
+}
+
+.benefit-item h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--brand-primary-contrast);
+  margin: 0 0 0.8rem 0;
+}
+
+.benefit-item p {
+  font-size: 0.9rem;
+  color: var(--brand-accent-alt);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Call to Action */
+.cta-section {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 3rem;
+}
+
+.cta-primary, .cta-secondary {
+  padding: 1rem 2.5rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.02em;
+}
+
+.cta-primary {
+  background: var(--brand-accent-gradient);
+  color: #fff;
+  box-shadow: 0 8px 25px -8px var(--brand-accent-glow);
+}
+
+.cta-primary:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 35px -10px var(--brand-accent-glow);
+}
+
+.cta-secondary {
+  background: transparent;
+  color: var(--brand-accent-alt);
+  border: 2px solid rgba(255,255,255,0.2);
+}
+
+.cta-secondary:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.3);
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 1rem;
+    min-height: 90vh;
+  }
+
+  .product-showcase {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .benefits-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .cta-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cta-primary, .cta-secondary {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .benefits-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .product-showcase {
+    margin: 1.5rem 0;
+  }
+
+  .benefit-item {
+    padding: 1.5rem 1rem;
+  }
+}
 .hero-rifa {
   position: relative;
   min-height: 100vh;
@@ -464,16 +862,17 @@ onUnmounted(() => {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Galería de fotos de la moto - Carousel */
-.moto-gallery-section {
+/* Hero Apple */
+.hero-gallery-section {
   position: relative;
   width: 100%;
-  padding: 5rem 2rem;
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #020617 100%);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  padding: 6rem 2rem 4rem;
+  background: radial-gradient(circle at 20% 25%, rgba(59,130,246,0.18) 0%, transparent 55%),
+    linear-gradient(135deg, var(--brand-bg-start) 0%, var(--brand-bg-end) 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: hidden;
 }
 
 .gallery-container {
@@ -517,22 +916,6 @@ onUnmounted(() => {
   text-align: center;
 }
 
-.moto-modifications {
-  /* Centrar y alinear con el contenido principal debajo de la galería */
-  position:absolute;
-  width: 100%;
-  max-width: 1200px; /* igual que el content-wrapper */
-  margin: 5rem auto 0 18rem; /* arriba separado, centrado */
-  padding: 0.75rem 2rem; /* padding horizontal para alinear con el layout */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  z-index: 1;
-}
 
 .modifications-description {
   font-size: 1rem;
@@ -595,10 +978,6 @@ onUnmounted(() => {
 }
 
 /* Movimiento suave del inner que se sincroniza con el scroll */
-.moto-modifications-inner {
-  transition: transform 0.15s linear;
-  will-change: transform;
-}
 
 /* Ocultar scrollbar en WebKit */
 .horizontal-gallery::-webkit-scrollbar {
@@ -834,9 +1213,7 @@ onUnmounted(() => {
     height: 300px;
   }
 
-  .moto-gallery-section {
-    padding: 3rem 0;
-  }
+  .hero-gallery-section { padding: 4rem 1rem 3rem; }
 
   .gallery-container {
     padding: 0;
@@ -861,20 +1238,7 @@ onUnmounted(() => {
   }
 
   /* Responsive para modificaciones en tablet */
-  .moto-modifications {
-    /* En tablet quitar posicion absoluta y usar flujo normal */
-    position: static !important;
-    width: 100% !important;
-    max-width: 1000px;
-    padding: 0.6rem 1rem;
-    margin: 2rem auto 0 auto; /* Cambio de -10.8rem a 2rem positivo */
-  }
-
-  .moto-modifications-inner {
-    width: auto !important;
-    transform: none !important;
-    transition: none !important;
-  }
+  .benefits-grid { grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap:18px; }
 
   .modifications-description {
     font-size: 0.95rem;
@@ -916,9 +1280,7 @@ onUnmounted(() => {
     height: 250px;
   }
 
-  .moto-gallery-section {
-    padding: 2rem 0;
-  }
+  .hero-gallery-section { padding: 3rem .75rem 2.5rem; }
 
   .gallery-nav-arrow {
     width: 40px;
@@ -939,20 +1301,7 @@ onUnmounted(() => {
   }
 
   /* Responsive para modificaciones en móvil */
-  .moto-modifications {
-    /* En móviles pequeños: flujo normal, ancho contenido y botón en bloque */
-    position: static !important;
-    width: 100% !important;
-    max-width: 92%;
-    padding: 0.5rem 1rem;
-    margin: -8rem auto 0 auto; /* Cambio de -10.8rem a 2rem positivo */
-  }
-
-  .moto-modifications-inner {
-    width: auto !important;
-    transform: none !important;
-    transition: none !important;
-  }
+  .benefits-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap:14px; }
 
   .modifications-description {
     font-size: 0.8rem;
@@ -1145,6 +1494,37 @@ onUnmounted(() => {
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
+/* === Nuevos estilos Apple Store Pro Hero === */
+.hero-title { font-size: clamp(2.2rem,4vw,3.4rem); line-height:1.1; font-weight:800; background:linear-gradient(90deg,#fff,#dbeafe); -webkit-background-clip:text; background-clip:text; color:transparent; letter-spacing:-1px; }
+.hero-title .accent { color: var(--brand-accent-alt); text-shadow:0 0 18px var(--brand-accent-glow); }
+.hero-title .sub { display:block; font-size:clamp(1rem,1.4vw,1.15rem); font-weight:500; letter-spacing:.5px; margin-top:10px; color:var(--brand-accent-alt); }
+.hero-tagline { margin-top:18px; font-size:clamp(.9rem,1.2vw,1.05rem); max-width:760px; color:var(--brand-accent-alt); font-weight:400; }
+.slide-desc { font-size:.75rem; opacity:.85; margin-top:4px; }
+
+.benefits-wrapper { margin-top:40px; width:100%; position:relative; z-index:5; }
+.benefits-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:24px; width:100%; max-width:1000px; margin:0 auto; }
+.benefit-card { background:linear-gradient(145deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02)); border:1px solid rgba(255,255,255,0.08); padding:18px 16px 20px; border-radius:18px; position:relative; overflow:hidden; backdrop-filter:blur(10px); transition:all .4s ease; min-height:160px; display:flex; flex-direction:column; gap:8px; }
+.benefit-card::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 20% 15%,rgba(255,255,255,0.15),transparent 70%); opacity:0; transition:opacity .5s ease; }
+.benefit-card:hover::before { opacity:1; }
+.benefit-card:hover { transform:translateY(-6px); box-shadow:0 12px 30px -8px rgba(0,0,0,0.45); border-color:rgba(255,255,255,0.18); }
+.benefit-icon { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:22px; color:#fff; box-shadow:0 4px 18px -4px rgba(59,130,246,0.5); }
+.benefit-card h4 { font-size:.95rem; margin:4px 0 0; letter-spacing:.5px; font-weight:600; color:var(--brand-primary-contrast); }
+.benefit-card p { font-size:.75rem; line-height:1.3; color:var(--brand-accent-alt); margin:0; }
+
+.cta-btn { position:relative; border:none; cursor:pointer; font-weight:600; letter-spacing:.5px; padding:14px 26px; border-radius:14px; font-size:.9rem; display:inline-flex; align-items:center; gap:8px; transition:all .4s; overflow:hidden; }
+.cta-btn.primary { background:var(--brand-accent-gradient); color:#fff; box-shadow:0 8px 25px -8px rgba(59,130,246,0.6); }
+.cta-btn.primary:hover { transform:translateY(-4px); box-shadow:0 18px 40px -12px rgba(59,130,246,0.7); }
+.cta-btn.ghost { background:rgba(255,255,255,0.05); color:var(--brand-accent-alt); border:1px solid rgba(255,255,255,0.15); }
+.cta-btn.ghost:hover { background:rgba(255,255,255,0.08); transform:translateY(-3px); }
+
+@media (max-width: 768px) {
+  .hero-title { font-size:2.4rem; }
+  .benefits-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+}
+@media (max-width: 520px) {
+  .benefits-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  .hero-title { font-size:2rem; }
+}
   box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3);
 }
 

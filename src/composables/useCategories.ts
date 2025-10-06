@@ -7,6 +7,32 @@ const categories = ref<Category[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 
+// Normaliza cualquier forma entrante de categoría (id numérico o string, fechas string) al tipo Category
+function normalizeCategory(input: unknown): Category {
+  if (typeof input === 'object' && input !== null) {
+    const anyCat = input as Record<string, unknown>
+    const id = anyCat.id !== undefined ? String(anyCat.id) : crypto.randomUUID()
+    const name = String(anyCat.name || '')
+    const description = String(anyCat.description || '')
+    const createdAtRaw = anyCat.createdAt
+    const updatedAtRaw = anyCat.updatedAt
+    return {
+      id,
+      name,
+      description,
+      createdAt: createdAtRaw ? new Date(String(createdAtRaw)) : new Date(),
+      updatedAt: updatedAtRaw ? new Date(String(updatedAtRaw)) : undefined
+    }
+  }
+  // Fallback vacío controlado
+  return {
+    id: crypto.randomUUID(),
+    name: '',
+    description: '',
+    createdAt: new Date()
+  }
+}
+
 export function useCategories() {
   // Función para cargar todas las categorías
   const loadCategories = async () => {
@@ -17,7 +43,13 @@ export function useCategories() {
       const response = await categoryService.getCategories()
 
       if (response.success) {
-        categories.value = response.data
+        // response.data puede venir en dos formatos: Category[] (id string) o arreglo con id numérico
+        const raw = response.data as unknown
+        if (Array.isArray(raw)) {
+          categories.value = raw.map(normalizeCategory)
+        } else {
+          categories.value = []
+        }
         return { success: true, data: response.data }
       } else {
         error.value = response.message
@@ -41,9 +73,9 @@ export function useCategories() {
       const response = await categoryService.createCategory(categoryData)
 
       if (response.success) {
-        // Agregar la nueva categoría al estado local
-        categories.value.push(response.data)
-        return { success: true, data: response.data, message: response.message }
+        const normalized = normalizeCategory(response.data)
+        categories.value.push(normalized)
+        return { success: true, data: normalized, message: response.message }
       } else {
         error.value = response.message
         return { success: false, message: response.message }
@@ -66,12 +98,10 @@ export function useCategories() {
       const response = await categoryService.updateCategory(id, categoryData)
 
       if (response.success) {
-        // Actualizar la categoría en el estado local
-        const index = categories.value.findIndex((cat) => cat.id === id)
-        if (index !== -1) {
-          categories.value[index] = response.data
-        }
-        return { success: true, data: response.data, message: response.message }
+        const normalized = normalizeCategory(response.data)
+        const index = categories.value.findIndex((cat) => cat.id === String(id))
+        if (index !== -1) categories.value[index] = normalized
+        return { success: true, data: normalized, message: response.message }
       } else {
         error.value = response.message
         return { success: false, message: response.message }
@@ -94,8 +124,7 @@ export function useCategories() {
       const response = await categoryService.deleteCategory(id)
 
       if (response.success) {
-        // Remover la categoría del estado local
-        categories.value = categories.value.filter((cat) => cat.id !== id)
+        categories.value = categories.value.filter((cat) => cat.id !== String(id))
         return { success: true, message: response.message }
       } else {
         error.value = response.message
@@ -111,8 +140,8 @@ export function useCategories() {
   }
 
   // Función para obtener una categoría por ID
-  const getCategoryById = (id: number): Category | undefined => {
-    return categories.value.find((cat) => cat.id === id)
+  const getCategoryById = (id: number | string): Category | undefined => {
+    return categories.value.find((cat) => cat.id === String(id))
   }
 
   // Función para limpiar errores
