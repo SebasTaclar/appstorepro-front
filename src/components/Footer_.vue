@@ -3,32 +3,47 @@
     <!-- Sección principal del footer -->
     <div class="footer-main">
       <div class="footer-container">
-        <!-- Contenido con logo a la izquierda y contacto a la derecha -->
+        <!-- Contenido con logo a la izquierda y texto a la derecha -->
         <div class="footer-content">
-          <!-- Logo y descripción -->
-          <div class="brand-section">
-            <h2 class="brand-title">DigitalWallpapers<span class="highlight">Moto</span></h2>
-            <p class="brand-description">
-              Tu oportunidad de comprar tus fondos digitales.
-            </p>
+          <!-- Logo centrado a la izquierda -->
+          <div class="logo-section">
+            <img src="/images/Logo1.jpeg" alt="Logo" class="footer-logo" />
           </div>
 
-          <!-- Información de contacto -->
-          <div class="contact-section">
-            <h3 class="section-title">Contacto</h3>
-            <div class="contact-info">
-              <div class="contact-item">
-                <div class="contact-icon">
-                  <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
-                  </svg>
-                </div>
-                <div class="contact-text">
-                  <span>Teléfono</span>
-                  <p>+57 311 8715539</p>
-                </div>
+          <!-- Texto a la derecha -->
+          <div class="text-section">
+            <h2 class="brand-title">APPLE STORE <span class="highlight">PRO</span></h2>
+            <p class="brand-description">Ofrecemos productos originales con garantía, la mejor experiencia de compra digital.</p>
+          </div>
+        </div>
+
+        <!-- Redes sociales independientes a la derecha -->
+        <div class="social-section">
+          <h3 class="social-title">Síguenos en nuestras redes</h3>
+          <div class="social-links">
+            <a href="https://www.instagram.com/apple_storepro?igsh=bGhkZjA2d3dtbnY=" target="_blank" rel="noopener" class="social-link">
+              <div class="social-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
               </div>
-            </div>
+              <div class="social-info">
+                <span class="social-name">Instagram</span>
+                <span class="social-handle">@apple_storepro</span>
+              </div>
+            </a>
+
+            <a href="https://www.tiktok.com/@apple_storepro" target="_blank" rel="noopener" class="social-link">
+              <div class="social-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-.88-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43V7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.43z"/>
+                </svg>
+              </div>
+              <div class="social-info">
+                <span class="social-name">TikTok</span>
+                <span class="social-handle">@apple_storepro</span>
+              </div>
+            </a>
           </div>
         </div>
       </div>
@@ -38,7 +53,7 @@
     <div class="footer-bottom">
       <div class="footer-container">
         <div class="copyright-section">
-          <p>&copy; 2025 DigitalWallpapersMoto. Todos los derechos reservados.</p>
+          <p>&copy; 2025 APPLE STORE PRO. Todos los derechos reservados.</p>
         </div>
       </div>
     </div>
@@ -55,135 +70,193 @@
 <style scoped>
 .modern-footer {
   position: relative;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-  color: #ffffff;
+  background: var(--brand-gradient);
+  color: var(--brand-primary-contrast);
   overflow: hidden;
 }
 
 .footer-main {
-  padding: 4rem 0 2rem;
+  padding: 4rem 1rem 2rem;
   position: relative;
   z-index: 2;
 }
 
 .footer-container {
   max-width: 1200px;
-  margin: 0 auto;
   padding: 0 2rem;
 }
 
 .footer-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 4rem;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr); /* Solo logo y texto ahora */
+  gap: 2.5rem;
+  align-items: center;
+  margin-bottom: 2rem;
 }
 
-/* Sección de marca a la izquierda */
-.brand-section {
-  flex: 1;
-  max-width: 500px;
+/* Sección de texto a la izquierda */
+.text-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: left;
+  text-align: left;
+}
+
+/* Sección de logo a la derecha */
+.logo-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.footer-logo {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid var(--brand-accent-alt);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 0 2px rgba(255,255,255,0.1);
+  transition: all 0.3s ease;
+}
+
+.footer-logo:hover {
+  transform: scale(1.08);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.5), 0 0 0 2px var(--brand-accent);
 }
 
 .brand-title {
-  font-size: 3rem;
-  font-weight: 800;
-  margin-bottom: 1rem;
-  color: #ffffff;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  padding-left: 4rem;
+  color: var(--brand-primary-contrast);
   text-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.5px;
+  line-height: 1.1;
 }
 
 .brand-title .highlight {
-  color: #60a5fa;
-  text-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+  color: #26F7D7;
 }
 
 .brand-description {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  color: #cbd5e1;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: rgba(255,255,255,0.8);
   margin: 0;
+  font-weight: 400;
+  text-align: center;
+  max-width: 420px;
 }
 
-/* Sección de contacto a la derecha */
-.contact-section {
-  flex-shrink: 0;
+/* Redes sociales independientes */
+.social-section {
+  position: absolute;
+  top: 2rem;
+  right: 4rem;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   text-align: right;
-  gap: 1.5rem;
+  gap: 1rem;
+  max-width: 280px;
+  z-index: 3;
 }
 
-.section-title {
-  font-size: 1.4rem;
+.social-title {
+  font-size: 1.2rem;
   font-weight: 700;
-  color: #60a5fa;
+  color: var(--brand-accent-alt);
   margin: 0;
   position: relative;
 }
 
-.section-title::after {
+.social-title::after {
   content: '';
   position: absolute;
-  bottom: -8px;
+  bottom: -6px;
   right: 0;
-  width: 40px;
-  height: 3px;
-  background: linear-gradient(90deg, #60a5fa, #3b82f6);
+  width: 35px;
+  height: 2px;
+  background: var(--brand-accent-gradient);
   border-radius: 2px;
 }
 
-.contact-info {
+.social-links {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
 }
 
-.contact-item {
+.social-link {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.8rem;
+  text-decoration: none;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.3s ease;
+  width: 100%;
+  justify-content: flex-start;
 }
 
-.contact-icon {
-  width: 45px;
-  height: 45px;
-  background: linear-gradient(135deg, #60a5fa, #3b82f6);
-  border-radius: 12px;
+.social-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--brand-accent-alt);
+  transform: translateY(-1px);
+}
+
+.social-icon {
+  width: 38px;
+  height: 38px;
+  background: var(--brand-accent-gradient);
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 15px rgba(96, 165, 250, 0.3);
+  box-shadow: 0 3px 10px var(--brand-accent-glow);
 }
 
-.contact-icon svg {
-  width: 22px;
-  height: 22px;
+.social-icon svg {
+  width: 20px;
+  height: 20px;
   color: #ffffff;
 }
 
-.contact-text span {
-  font-size: 0.9rem;
-  color: #60a5fa;
+.social-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  flex: 1;
+}
+
+.social-name {
+  font-size: 0.8rem;
+  color: var(--brand-accent-alt);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   display: block;
 }
 
-.contact-text p {
-  margin: 0.4rem 0 0 0;
-  color: #e2e8f0;
-  font-size: 1.1rem;
+.social-handle {
+  color: var(--brand-primary-contrast);
+  font-size: 0.95rem;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.3;
+  margin-top: 0.1rem;
 }
 
 /* Barra inferior */
 .footer-bottom {
-  background: rgba(15, 23, 42, 0.8);
-  border-top: 1px solid rgba(96, 165, 250, 0.2);
+  background: rgba(0, 0, 0, 0.5);
+  border-top: 1px solid var(--brand-border);
   padding: 1.5rem 0;
   position: relative;
   z-index: 2;
@@ -191,13 +264,21 @@
 
 /* Sección del copyright */
 .copyright-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
   text-align: center;
 }
 
 .copyright-section p {
-  margin: 0;
-  color: #94a3b8;
+  color: var(--brand-accent-alt);
   font-size: 0.9rem;
+  margin-left: 25rem;
+}
+
+.copyright-section .highlight {
+  color: var(--brand-success);
 }
 
 /* Elementos decorativos */
@@ -214,7 +295,7 @@
 .decoration-circle {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(96, 165, 250, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
   animation: float 6s ease-in-out infinite;
 }
 
@@ -267,39 +348,73 @@
   }
 
   .footer-content {
-    flex-direction: column;
-    align-items: center;
+    grid-template-columns: 1fr;
+    gap: 2.2rem;
     text-align: center;
-    gap: 2.5rem;
+    margin-bottom: 1rem;
   }
 
-  .contact-section {
+  .logo-section {
+    order: 1;
+    text-align: center;
+    justify-self: center;
+  }
+
+  .text-section {
+    order: 2;
     align-items: center;
+  }
+
+  .brand-title {
+    padding-left: 0;
+    font-size: 1.6rem;
     text-align: center;
   }
 
-  .section-title::after {
+  .copyright-section{
+    margin-left: 0;
+  }
+
+  .copyright-section p {
+    margin-left: 0;
+  }
+
+  .brand-description {
+    text-align: center;
+  }
+
+  .social-section {
+    position: static;
+    order: 3;
+    align-items: center;
+    text-align: center;
+    max-width: 100%;
+    margin-top: 2rem;
+  }
+
+  .social-title::after {
     right: auto;
     left: 50%;
     transform: translateX(-50%);
   }
 
-  .contact-info {
-    justify-content: center;
+  .social-links {
+    align-items: center;
+    max-width: 250px;
   }
 
-  .brand-title {
-    font-size: 2.5rem;
+  .social-info {
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-logo {
+    width: 110px;
+    height: 110px;
   }
 
   .brand-description {
-    font-size: 1rem;
-  }
-
-  .contact-item {
-    flex-direction: column;
-    text-align: center;
-    gap: 0.8rem;
+    font-size: 0.9rem;
   }
 }@media (max-width: 480px) {
   .footer-main {
@@ -310,22 +425,49 @@
     padding: 0 1rem;
   }
 
+  .logo-section {
+    text-align: center;
+    justify-self: center;
+  }
+
+  .copyright-section{
+    margin-left: 0;
+  }
+
+  .copyright-section p {
+    margin-left: 0;
+  }
+
   .brand-title {
-    font-size: 2rem;
+    font-size: 1.4rem;
+    text-align: center;
+  }
+
+  .footer-logo {
+    width: 90px;
+    height: 90px;
   }
 
   .brand-description {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
   }
 
-  .contact-icon {
-    width: 40px;
-    height: 40px;
+  .social-icon {
+    width: 35px;
+    height: 35px;
   }
 
-  .contact-icon svg {
+  .social-icon svg {
     width: 18px;
     height: 18px;
+  }
+
+  .social-name {
+    font-size: 0.75rem;
+  }
+
+  .social-handle {
+    font-size: 0.9rem;
   }
 
   .decoration-circle {

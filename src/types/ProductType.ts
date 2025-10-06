@@ -1,13 +1,13 @@
 export type Product = {
-  _id: string
+  id: string
   name: string
-  code: string
-  brand: string
-  priceNet: number
-  priceIva: number
-  priceTotal: number
-  priceWarranty: number
-  rented: boolean
-  createdAt: string
-  updatedAt: string
+  description: string
+  price: number
+  originalPrice?: number
+  images: string[]
+  category: string
+  status: 'available' | 'out-of-stock' | 'coming-soon'
+  colors?: string[]
+  createdAt: Date
+  updatedAt?: Date
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="floating-social">
     <a
-      href="https://wa.me/+573118715539"
+      :href="whatsappLink"
       target="_blank"
       rel="noopener"
       class="social-btn whatsapp"
@@ -17,9 +17,22 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({
-  name: 'SocialFloating'
-})
+// Número en formato internacional (sin '+')
+const rawNumber = '573209860099'
+// Normaliza a solo dígitos
+const whatsappNumber = rawNumber.replace(/[^\d]/g, '')
+
+// Validación mínima: debe empezar por 57 y tener al menos 12 dígitos (57 + 10)
+const isValidWhatsAppNumber = /^57\d{10}$/.test(whatsappNumber)
+
+const defaultMessage = 'Hola! Me interesa un producto de Apple Store Pro. ¿Me pueden brindar más información?'
+// Endpoint alternativo más tolerante que wa.me
+const whatsappLink = isValidWhatsAppNumber
+  ? `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodeURIComponent(defaultMessage)}`
+  : '#'
+
+
+defineOptions({ name: 'SocialFloating' })
 </script>
 
 <style scoped>
@@ -73,6 +86,19 @@ defineOptions({
   background: rgba(37, 211, 102, 1);
   box-shadow: 0 8px 30px rgba(37, 211, 102, 0.6);
   border-color: rgba(37, 211, 102, 0.8);
+}
+
+/* Make WhatsApp button fully visible (override global transparency) */
+.social-btn.whatsapp {
+  background: #25d366;
+  border-color: #25d366;
+  opacity: 1 !important;
+  box-shadow: 0 8px 24px rgba(37,211,102,0.35);
+}
+
+.social-btn.whatsapp .social-icon {
+  opacity: 1 !important;
+  filter: none !important;
 }
 
 .social-icon {
@@ -148,7 +174,7 @@ defineOptions({
   }
   to {
     transform: translateX(0);
-    opacity: 0.4;
+    opacity: 1;
   }
 }
 

@@ -59,7 +59,7 @@ const handleLogin = async () => {
       const userInfo = authService.getCurrentUser();
 
       if (userInfo?.role === 'admin') {
-        router.push('/admin');
+        router.push('/admin/products');
       } else {
         router.push('/');
       }

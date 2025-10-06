@@ -8,6 +8,24 @@
   --white: #ffffff;             /* Blanco */
   --black: #000000;             /* Negro puro */
 
+  /* Paleta de marca derivada del logo negro */
+  /* Ajusta estos valores según el logo final (ej: si el acento es diferente) */
+  --brand-primary: #000000;            /* Color dominante (logo negro) */
+  --brand-primary-contrast: #ffffff;   /* Texto sobre superficies negras */
+  --brand-bg-start: #0a0a0a;           /* Degradado de fondo inicio */
+  --brand-bg-end: #1d1f23;             /* Degradado de fondo fin */
+  --brand-surface: #141618;            /* Superficie cards/nav */
+  --brand-border: #2a2d31;             /* Bordes sutiles */
+  --brand-accent: #3b82f6;             /* Acento (azul eléctrico) */
+  --brand-accent-alt: #60a5fa;         /* Acento claro */
+  --brand-accent-glow: rgba(96,165,250,0.5);
+  --brand-gradient: linear-gradient(135deg, var(--brand-bg-start) 0%, var(--brand-bg-end) 100%);
+  --brand-accent-gradient: linear-gradient(135deg, var(--brand-accent) 0%, var(--brand-accent-alt) 100%);
+  --brand-danger: #ef4444;
+  --brand-success: #10b981;
+  --brand-warning: #f59e0b;
+  --brand-info: #3b82f6;
+
   /* Colores adicionales */
   --light-gray: #f5f5f5;
   --medium-gray: #757575;
@@ -96,6 +114,17 @@
   --app-warning: #ff9800;
   --app-error: #f44336;
   --app-info: #2196f3;
+
+  /* Ajustes de marca en modo oscuro (acentos un poco más vibrantes) */
+  --brand-bg-start: #000000;
+  --brand-bg-end: #121315;
+  --brand-surface: #1a1c1f;
+  --brand-border: #2c2f33;
+  --brand-accent: #3b82f6;
+  --brand-accent-alt: #60a5fa;
+  --brand-accent-glow: rgba(59,130,246,0.55);
+  --brand-gradient: linear-gradient(135deg, var(--brand-bg-start) 0%, var(--brand-bg-end) 100%);
+  --brand-accent-gradient: linear-gradient(135deg, var(--brand-accent) 0%, var(--brand-accent-alt) 100%);
 }
 
 /* Reset básico */

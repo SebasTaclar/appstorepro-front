@@ -1,10 +1,10 @@
 // Tipos para categorías
 export interface Category {
-  id: number
+  id: string
   name: string
   description: string
-  createdAt: string
-  updatedAt: string
+  createdAt: Date
+  updatedAt?: Date
 }
 
 export interface CreateCategoryRequest {

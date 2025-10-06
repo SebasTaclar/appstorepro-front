@@ -1,0 +1,123 @@
+import { ref, computed } from 'vue'
+
+export interface CartItem {
+  id: string
+  name: string
+  price: number
+  image: string
+  quantity: number
+  category: string
+  selectedColor?: string
+}
+
+export interface Product {
+  id: string
+  name: string
+  price: number
+  image: string
+  category: string
+  description: string
+  inStock: boolean
+  originalPrice?: number
+}
+
+// Estado global del carrito
+const cartItems = ref<CartItem[]>([])
+const isCartOpen = ref(false)
+
+export function useCart() {
+  // Computed para el total de items
+  const totalItems = computed(() => {
+    return cartItems.value.reduce((total, item) => total + item.quantity, 0)
+  })
+
+  // Computed para el total del precio
+  const totalPrice = computed(() => {
+    return cartItems.value.reduce((total, item) => total + (item.price * item.quantity), 0)
+  })
+
+  // Agregar producto al carrito
+  const addToCart = (product: Product, quantity: number = 1, selectedColor?: string) => {
+    const existingItem = cartItems.value.find(item =>
+      item.id === product.id && item.selectedColor === selectedColor
+    )
+
+    if (existingItem) {
+      existingItem.quantity += quantity
+    } else {
+      cartItems.value.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        quantity,
+        category: product.category,
+        selectedColor
+      })
+    }
+  }
+
+  // Remover producto del carrito
+  const removeFromCart = (productId: string) => {
+    const index = cartItems.value.findIndex(item => item.id === productId)
+    if (index > -1) {
+      cartItems.value.splice(index, 1)
+    }
+  }
+
+  // Actualizar cantidad de un producto
+  const updateQuantity = (productId: string, quantity: number) => {
+    const item = cartItems.value.find(item => item.id === productId)
+    if (item) {
+      if (quantity <= 0) {
+        removeFromCart(productId)
+      } else {
+        item.quantity = quantity
+      }
+    }
+  }
+
+  // Limpiar carrito
+  const clearCart = () => {
+    cartItems.value = []
+  }
+
+  // Obtener cantidad de un producto específico
+  const getItemQuantity = (productId: string) => {
+    const item = cartItems.value.find(item => item.id === productId)
+    return item ? item.quantity : 0
+  }
+
+  // Toggle carrito
+  const toggleCart = () => {
+    isCartOpen.value = !isCartOpen.value
+  }
+
+  // Abrir carrito
+  const openCart = () => {
+    isCartOpen.value = true
+  }
+
+  // Cerrar carrito
+  const closeCart = () => {
+    isCartOpen.value = false
+  }
+
+  return {
+    // Estado
+    cartItems: computed(() => cartItems.value),
+    isCartOpen: computed(() => isCartOpen.value),
+    totalItems,
+    totalPrice,
+
+    // Métodos
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    getItemQuantity,
+    toggleCart,
+    openCart,
+    closeCart
+  }
+}
