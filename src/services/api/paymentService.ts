@@ -11,18 +11,72 @@ export interface CreatePaymentRequest {
   amount: number
 }
 
-export interface Purchase {
-  id: string
-  wallpaperNumbers: number[]
+// Nuevo tipo para pagos de productos del checkout
+export interface CreateProductPaymentRequest {
   buyerEmail: string
   buyerName: string
+  buyerIdentificationNumber: string
   buyerContactNumber: string
+  shippingAddress?: string // Opcional, solo si es envío a domicilio
+  items: {
+    productId: number
+    quantity: number
+    selectedColor?: string
+  }[]
+}
+
+export interface ProductPaymentItem {
+  productId: number
+  productName: string
+  quantity: number
+  unitPrice: number
+  totalPrice: number
+  selectedColor?: string
+}
+
+export interface ProductPaymentResponse {
+  message: string
+  purchase: {
+    id: number
+    totalAmount: number
+    currency: string
+    status: string
+    orderStatus: string
+    items: ProductPaymentItem[]
+  }
+  payment: {
+    wompiTransactionId: string
+    paymentUrl: string
+    provider: string
+  }
+}
+
+export interface Purchase {
+  id: string | number
+  wallpaperNumbers?: number[]
+  buyerEmail: string
+  buyerName: string
+  buyerContactNumber?: string
+  buyerIdentificationNumber?: string
+  shippingAddress?: string
   status: 'PENDING' | 'APPROVED' | 'COMPLETED' | 'REJECTED' | 'CANCELLED'
-  amount: number
+  orderStatus?: 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED'
+  amount?: number
+  totalAmount?: number
   currency: string
+  items?: ProductPaymentItem[]
   createdAt: string
   updatedAt: string
+  paymentProvider?: string
+  wompiTransactionId?: string
 }
+
+export interface GetPurchasesResponse {
+  email?: string
+  count: number
+  purchases: Purchase[]
+}
+
 
 export interface PaymentResponse {
   message: string
@@ -60,13 +114,22 @@ export interface WompiPaymentResponse {
   }
 }
 
-export interface GetPurchasesResponse {
-  email: string
-  count: number
-  purchases: Purchase[]
-}
-
 export class PaymentService {
+  /**
+   * Crear un nuevo pago para productos del checkout
+   */
+  async createProductPayment(
+    request: CreateProductPaymentRequest,
+  ): Promise<ApiResponse<ProductPaymentResponse>> {
+    try {
+      const response = await apiClient.post<ProductPaymentResponse>('/payment/create', request)
+      return response
+    } catch (error) {
+      console.error('Error creating product payment:', error)
+      throw error
+    }
+  }
+
   /**
    * Crear un nuevo pago para un wallpaper
    */
@@ -132,6 +195,7 @@ export class PaymentService {
       if (response.success && response.data) {
         return response.data.purchases.some(
           (purchase) =>
+            purchase.wallpaperNumbers &&
             purchase.wallpaperNumbers.includes(wallpaperNumber) &&
             (purchase.status === 'APPROVED' || purchase.status === 'PENDING'),
         )

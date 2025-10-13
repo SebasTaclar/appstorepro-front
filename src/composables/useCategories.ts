@@ -34,30 +34,51 @@ function normalizeCategory(input: unknown): Category {
 }
 
 export function useCategories() {
-  // Función para cargar todas las categorías
-  const loadCategories = async () => {
+  // Función para cargar todas las categorías con filtros opcionales
+  const loadCategories = async (filters?: { name?: string; description?: string }) => {
     loading.value = true
     error.value = null
 
     try {
-      const response = await categoryService.getCategories()
+      console.log('🔄 [loadCategories] Iniciando carga de categorías...')
+      const response = await categoryService.getCategories(filters)
+      console.log('📥 [loadCategories] Respuesta del backend:', response)
 
       if (response.success) {
-        // response.data puede venir en dos formatos: Category[] (id string) o arreglo con id numérico
+        // La respuesta puede venir en dos formatos:
+        // 1. { data: [...] } - Array directo
+        // 2. { data: { categories: [...], count: N } } - Objeto con categories
         const raw = response.data as unknown
+        console.log('📦 [loadCategories] Datos raw:', raw)
+
+        let categoriesToNormalize: unknown[] = []
+
         if (Array.isArray(raw)) {
-          categories.value = raw.map(normalizeCategory)
-        } else {
-          categories.value = []
+          // Formato 1: Array directo
+          categoriesToNormalize = raw
+        } else if (raw && typeof raw === 'object' && 'categories' in raw) {
+          // Formato 2: Objeto con propiedad categories
+          const dataObj = raw as { categories?: unknown[] }
+          if (Array.isArray(dataObj.categories)) {
+            categoriesToNormalize = dataObj.categories
+          }
         }
+
+        const normalized = categoriesToNormalize.map(normalizeCategory)
+        console.log('✅ [loadCategories] Categorías normalizadas:', normalized)
+        categories.value = normalized
+        console.log('📋 [loadCategories] Categories.value actualizado:', categories.value.length, categories.value)
+
         return { success: true, data: response.data }
       } else {
         error.value = response.message
+        console.error('❌ [loadCategories] Error del backend:', response.message)
         return { success: false, message: response.message }
       }
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Error al cargar categorías'
       error.value = errorMessage
+      console.error('❌ [loadCategories] Excepción:', err)
       return { success: false, message: errorMessage }
     } finally {
       loading.value = false
@@ -70,19 +91,30 @@ export function useCategories() {
     error.value = null
 
     try {
+      console.log('📝 [useCategories] Creando categoría:', categoryData)
+      console.log('📋 [useCategories] Categorías antes de crear:', categories.value.length)
+
       const response = await categoryService.createCategory(categoryData)
+      console.log('📥 [useCategories] Respuesta del backend:', response)
 
       if (response.success) {
         const normalized = normalizeCategory(response.data)
+        console.log('✅ [useCategories] Categoría normalizada:', normalized)
+
         categories.value.push(normalized)
+        console.log('📋 [useCategories] Categorías después de crear:', categories.value.length)
+        console.log('📋 [useCategories] Array completo:', categories.value)
+
         return { success: true, data: normalized, message: response.message }
       } else {
         error.value = response.message
+        console.error('❌ [useCategories] Error del backend:', response.message)
         return { success: false, message: response.message }
       }
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Error al crear categoría'
       error.value = errorMessage
+      console.error('❌ [useCategories] Excepción:', err)
       return { success: false, message: errorMessage }
     } finally {
       loading.value = false
@@ -155,10 +187,10 @@ export function useCategories() {
   }
 
   return {
-    // Estado
-    categories: computed(() => categories.value),
-    loading: computed(() => loading.value),
-    error: computed(() => error.value),
+    // Estado - Retornar refs directamente para mantener reactividad
+    categories,
+    loading,
+    error,
 
     // Computeds
     categoriesCount: computed(() => categories.value.length),

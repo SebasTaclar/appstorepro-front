@@ -49,9 +49,24 @@ const router = createRouter({
       component: () => import('../views/PaymentFailure.vue'),
     },
     {
+      path: '/checkout',
+      name: 'Checkout',
+      component: () => import('../views/Checkout.vue'),
+    },
+    {
+      path: '/terms-and-conditions',
+      name: 'TermsAndConditions',
+      component: () => import('../views/TermsAndConditions.vue'),
+    },
+    {
       path: '/test-sync',
       name: 'test-sync',
       component: () => import('../views/TestSync.vue'),
+    },
+    {
+      path: '/test-purchases',
+      name: 'test-purchases',
+      component: () => import('../views/TestPurchases.vue'),
     },
     {
       path: '/payment/pending',
