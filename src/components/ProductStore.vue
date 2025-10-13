@@ -134,8 +134,8 @@
             <button @click="clearCart" class="btn-clear">
               Limpiar carrito
             </button>
-            <button class="btn-checkout">
-              Proceder al checkout
+            <button @click="goToCheckout" class="btn-checkout">
+              Finalizar Pedido
             </button>
           </div>
         </div>
@@ -232,9 +232,13 @@
     </div>
   </section>
 </template><script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useCart } from '@/composables/useCart'
 import { useProducts, type Product as ProductType } from '@/composables/useProducts'
+
+// Router
+const router = useRouter()
 
 // Usar el composable del carrito
 const {
@@ -251,7 +255,32 @@ const {
 } = useCart()
 
 // Usar el composable de productos
-const { availableProducts, categories, getCategoryById } = useProducts()
+const {
+  availableProducts,
+  categories,
+  getCategoryById,
+  loadProducts,
+  loadCategories
+} = useProducts()
+
+// Cargar productos y categorías al montar el componente
+onMounted(async () => {
+  console.log('🏪 [ProductStore] onMounted - Iniciando carga...')
+  console.log('🏪 [ProductStore] availableProducts ANTES de cargar:', availableProducts.value.length)
+
+  await loadCategories()
+  console.log('🏪 [ProductStore] Categorías cargadas:', categories.value.length)
+
+  await loadProducts()
+  console.log('🏪 [ProductStore] loadProducts ejecutado')
+  console.log('🏪 [ProductStore] availableProducts DESPUÉS de cargar:', availableProducts.value.length)
+  console.log('🏪 [ProductStore] availableProducts:', availableProducts.value)
+})
+
+// Watcher para debug: observar cambios en productos
+watch(availableProducts, (newProducts) => {
+  console.log('🔔 [ProductStore Watch] availableProducts cambiaron:', newProducts.length, newProducts)
+}, { immediate: true })
 
 // Estado local
 const selectedCategory = ref('Todos')
@@ -288,6 +317,12 @@ const closeModal = () => {
   showModal.value = false
   selectedProduct.value = null
   modalSelectedColor.value = ''
+}
+
+// Función para ir al checkout
+const goToCheckout = () => {
+  closeCart()
+  router.push('/checkout')
 }
 
 // Función para agregar al carrito desde el modal
@@ -999,9 +1034,9 @@ const getColorHex = (colorName: string): string => {
 .cart-modal {
   background: var(--brand-surface);
   border-radius: 20px;
-  max-width: 600px;
+  max-width: 900px; /* Cambiado de 600px a 900px para desktop */
   width: 100%;
-  max-height: 80vh;
+  max-height: 85vh; /* Aumentado un poco */
   overflow: hidden;
   display: flex;
   flex-direction: column;

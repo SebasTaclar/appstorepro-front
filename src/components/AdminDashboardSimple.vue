@@ -121,7 +121,7 @@
             </div>
             <div class="category-actions">
               <button class="btn btn-sm btn-secondary" @click="editCategory(category)">✏️</button>
-              <button class="btn btn-sm btn-danger" @click="deleteCategory(category.id)">🗑️</button>
+              <button class="btn btn-sm btn-danger" @click="handleDeleteCategory(category.id)">🗑️</button>
             </div>
           </div>
         </div>
@@ -185,81 +185,105 @@
       <div v-if="activeTab === 'sales'" class="content-section">
         <div class="section-header">
           <h2>Resumen de Compras</h2>
+          <button @click="loadPurchases" class="btn-secondary" :disabled="isLoadingSales">
+            {{ isLoadingSales ? 'Cargando...' : 'Actualizar' }}
+          </button>
         </div>
 
-        <!-- Estadísticas de ventas -->
-        <div class="sales-stats">
-          <div class="stat-card">
-            <div class="stat-icon">💰</div>
-            <div class="stat-content">
-              <div class="stat-number">${{ totalRevenue.toLocaleString() }}</div>
-              <div class="stat-label">Ingresos Totales</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">⏳</div>
-            <div class="stat-content">
-              <div class="stat-number">{{ pendingSales }}</div>
-              <div class="stat-label">Ventas Pendientes</div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">📈</div>
-            <div class="stat-content">
-              <div class="stat-number">{{ totalSalesCount }}</div>
-              <div class="stat-label">Total Ventas</div>
-            </div>
-          </div>
+        <!-- Estado de carga -->
+        <div v-if="isLoadingSales" class="loading-state">
+          <div class="spinner"></div>
+          <p>Cargando compras...</p>
         </div>
 
-        <!-- Tabla de ventas -->
-        <div class="sales-table-container">
-          <table class="sales-table">
-            <thead>
-              <tr>
-                <th>Cliente</th>
-                <th>Producto</th>
-                <th>Cantidad</th>
-                <th>Total</th>
-                <th>Estado</th>
-                <th>Fecha</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="sale in sales" :key="sale.id" class="sale-row">
-                <td>
-                  <div class="customer-info">
-                    <div class="customer-name">{{ sale.customerName }}</div>
-                    <div class="customer-email">{{ sale.customerEmail }}</div>
-                  </div>
-                </td>
-                <td>
-                  <div class="product-name">{{ sale.productName }}</div>
-                </td>
-                <td>
-                  <span class="quantity">{{ sale.quantity }}</span>
-                </td>
-                <td>
-                  <span class="amount">${{ sale.totalAmount.toLocaleString() }}</span>
-                </td>
-                <td>
-                  <span :class="['status-badge', sale.status]">
-                    {{ getSaleStatusText(sale.status) }}
-                  </span>
-                </td>
-                <td>
-                  <span class="date">{{ formatDate(sale.date) }}</span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Error -->
+        <div v-else-if="salesError" class="error-state">
+          <div class="error-icon">⚠️</div>
+          <p>{{ salesError }}</p>
+          <button @click="loadPurchases" class="btn-primary">Reintentar</button>
         </div>
 
-        <!-- Estado vacío -->
-        <div v-if="sales.length === 0" class="empty-state">
-          <div class="empty-icon">📊</div>
-          <h3>No hay ventas registradas</h3>
-          <p>Las ventas aparecerán aquí cuando los clientes realicen compras</p>
+        <!-- Contenido -->
+        <div v-else>
+          <!-- Estadísticas de ventas -->
+          <div class="sales-stats">
+            <div class="stat-card">
+              <div class="stat-icon">💰</div>
+              <div class="stat-content">
+                <div class="stat-number">${{ totalRevenue.toLocaleString() }}</div>
+                <div class="stat-label">Ingresos Totales</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">⏳</div>
+              <div class="stat-content">
+                <div class="stat-number">{{ pendingSales }}</div>
+                <div class="stat-label">Ventas Pendientes</div>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">📈</div>
+              <div class="stat-content">
+                <div class="stat-number">{{ totalSalesCount }}</div>
+                <div class="stat-label">Total Ventas</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabla de ventas -->
+          <div class="sales-table-container" v-if="sales.length > 0">
+            <table class="sales-table">
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Producto</th>
+                  <th>Cantidad</th>
+                  <th>Total</th>
+                  <th>Estado</th>
+                  <th>Fecha</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="sale in sales" :key="sale.id" class="sale-row">
+                  <td>
+                    <div class="customer-info">
+                      <div class="customer-name">{{ sale.customerName }}</div>
+                      <div class="customer-email">{{ sale.customerEmail }}</div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="product-info">
+                      <div class="product-name">{{ sale.productName }}</div>
+                      <div v-if="sale.selectedColor" class="product-color">
+                        Color: {{ sale.selectedColor }}
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="quantity">{{ sale.quantity }}</span>
+                  </td>
+                  <td>
+                    <span class="amount">${{ sale.totalAmount.toLocaleString() }}</span>
+                  </td>
+                  <td>
+                    <span :class="['status-badge', sale.status]">
+                      {{ getSaleStatusText(sale.status) }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="date">{{ formatDate(sale.date) }}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Estado vacío -->
+          <div v-else class="empty-state">
+            <div class="empty-icon">📊</div>
+            <h3>No hay ventas registradas</h3>
+            <p>Las ventas aparecerán aquí cuando los clientes realicen compras</p>
+          </div>
         </div>
       </div>
     </div>
@@ -499,6 +523,10 @@
               <textarea v-model="showcaseForm.description" class="form-input" rows="3" required></textarea>
             </div>
             <div class="form-group">
+              <label>Precio *</label>
+              <input v-model.number="showcaseForm.price" type="number" class="form-input" min="0" step="1000" required />
+            </div>
+            <div class="form-group">
               <label>Imagen del Producto *</label>
 
               <!-- Tabs para elegir método de imagen -->
@@ -582,18 +610,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useProducts, type ShowcaseProduct } from '@/composables/useProducts'
 import type { Product } from '@/types/ProductType'
+import type { Category, CreateCategoryRequest } from '@/types/CategoryType'
+import { paymentService } from '@/services/api/paymentService'
+import type { Purchase } from '@/services/api/paymentService'
 
 // Tipos
-interface Category {
-  id: string
-  name: string
-  description: string
-  createdAt: Date
-}
-
 interface Sale {
   id: string
   productId: string
@@ -605,6 +629,7 @@ interface Sale {
   totalAmount: number
   status: 'completed' | 'pending' | 'cancelled'
   date: Date
+  selectedColor?: string
 }
 
 // Estado reactivo (persistente)
@@ -636,50 +661,101 @@ const {
   addProduct,
   updateProduct,
   deleteProduct,
+  loadShowcaseProducts,
   addShowcaseProduct,
   updateShowcaseProduct,
   deleteShowcaseProduct,
-  getCategoryById
+  getCategoryById,
+  loadCategories,
+  loadProducts,
+  addCategory,
+  updateCategory,
+  deleteCategory
 } = useProducts()
 
-const sales = ref<Sale[]>([
-  {
-    id: '1',
-    productId: '1',
-    productName: 'iPhone 15 Pro',
-    customerName: 'Juan Pérez',
-    customerEmail: 'juan@email.com',
-    quantity: 1,
-    unitPrice: 1200000,
-    totalAmount: 1200000,
-    status: 'completed',
-    date: new Date('2024-10-01')
-  },
-  {
-    id: '2',
-    productId: '2',
-    productName: 'iPad Air',
-    customerName: 'María García',
-    customerEmail: 'maria@email.com',
-    quantity: 2,
-    unitPrice: 800000,
-    totalAmount: 1600000,
-    status: 'completed',
-    date: new Date('2024-10-02')
-  },
-  {
-    id: '3',
-    productId: '3',
-    productName: 'AirPods Pro 2',
-    customerName: 'Carlos López',
-    customerEmail: 'carlos@email.com',
-    quantity: 1,
-    unitPrice: 350000,
-    totalAmount: 350000,
-    status: 'pending',
-    date: new Date('2024-10-03')
+// Cargar categorías y productos desde el backend al montar el componente
+onMounted(async () => {
+  console.log('🔄 Cargando categorías y productos al montar el componente...')
+  await loadCategories()
+  await loadProducts()
+  await loadShowcaseProducts()
+  await loadPurchases()
+  console.log('✅ Categorías cargadas:', categories.value)
+  console.log('✅ Productos cargados:', products.value)
+  console.log('✅ Productos showcase cargados:', showcaseProducts.value)
+})
+
+// Watcher para debug: observar cambios en categorías
+watch(categories, (newCategories) => {
+  console.log('🔔 [Watch] Categorías cambiaron:', newCategories.length, newCategories)
+}, { deep: true })
+
+// Sales / Purchases data
+const sales = ref<Sale[]>([])
+const isLoadingSales = ref(false)
+const salesError = ref('')
+
+// Transform Purchase to Sale format
+const transformPurchaseToSale = (purchase: Purchase): Sale => {
+  const firstItem = purchase.items?.[0]
+  // Try both totalAmount and amount properties
+  const totalAmount = purchase.totalAmount || purchase.amount || 0
+
+  return {
+    id: purchase.id.toString(),
+    productId: firstItem?.productId?.toString() || '',
+    productName: firstItem?.productName || 'Múltiples productos',
+    customerName: purchase.buyerName,
+    customerEmail: purchase.buyerEmail,
+    quantity: firstItem?.quantity || 1,
+    unitPrice: firstItem?.unitPrice || 0,
+    totalAmount: totalAmount,
+    status: mapPurchaseStatus(purchase.status),
+    date: new Date(purchase.createdAt),
+    selectedColor: firstItem?.selectedColor
   }
-])
+}
+
+// Map purchase status to sale status
+const mapPurchaseStatus = (status: string): 'completed' | 'pending' | 'cancelled' => {
+  const upperStatus = status.toUpperCase()
+  if (upperStatus === 'COMPLETED' || upperStatus === 'APPROVED') return 'completed'
+  if (upperStatus === 'CANCELLED' || upperStatus === 'REJECTED') return 'cancelled'
+  return 'pending'
+}
+
+// Load purchases from API
+const loadPurchases = async () => {
+  isLoadingSales.value = true
+  salesError.value = ''
+  try {
+    console.log('📦 Cargando compras desde API...')
+    const response = await paymentService.getAllPurchases()
+    console.log('📦 Respuesta completa de compras:', response)
+
+    if (response.success && response.data) {
+      console.log('📦 Purchases raw data:', response.data.purchases)
+      sales.value = response.data.purchases.map((purchase) => {
+        console.log('📦 Transformando purchase:', {
+          id: purchase.id,
+          amount: purchase.amount,
+          totalAmount: purchase.totalAmount,
+          items: purchase.items
+        })
+        return transformPurchaseToSale(purchase)
+      })
+      console.log('✅ Compras transformadas:', sales.value)
+    } else {
+      salesError.value = 'No se pudieron cargar las compras'
+      console.error('❌ Error en respuesta de compras:', response)
+    }
+  } catch (error) {
+    salesError.value = 'Error al cargar las compras'
+    console.error('❌ Error cargando compras:', error)
+  } finally {
+    isLoadingSales.value = false
+  }
+}
 
 // Formularios
 const productForm = ref({
@@ -709,7 +785,7 @@ const appleColors = ref([
   { name: 'White', hex: '#ffffff' }
 ])
 
-const categoryForm = ref({
+const categoryForm = ref<CreateCategoryRequest>({
   name: '',
   description: ''
 })
@@ -717,6 +793,7 @@ const categoryForm = ref({
 const showcaseForm = ref({
   name: '',
   description: '',
+  price: 0,
   image: '',
   category: ''
 })
@@ -729,6 +806,7 @@ const showcaseFormValid = computed(() => {
   return (
     showcaseForm.value.name.trim().length > 0 &&
     showcaseForm.value.description.trim().length > 0 &&
+    showcaseForm.value.price > 0 &&
     showcaseForm.value.image.trim().length > 0 &&
     showcaseForm.value.category.trim().length > 0
   )
@@ -839,7 +917,7 @@ const editCategory = (category: Category) => {
   editingCategory.value = category
   categoryForm.value = {
     name: category.name,
-    description: category.description
+    description: category.description || '' // Manejar descripción opcional
   }
   showCategoryForm.value = true
 }
@@ -850,9 +928,10 @@ const deleteProductConfirm = (id: string) => {
   }
 }
 
-const deleteCategory = (id: string) => {
+// Función wrapper para eliminar categoría con confirmación
+const handleDeleteCategory = async (id: string) => {
   if (confirm('¿Estás seguro de eliminar esta categoría?')) {
-    categories.value = categories.value.filter(c => c.id !== id)
+    await deleteCategory(Number(id))
   }
 }
 
@@ -862,6 +941,7 @@ const editShowcaseProduct = (product: ShowcaseProduct) => {
   showcaseForm.value = {
     name: product.name,
     description: product.description,
+    price: product.price,
     image: product.image,
     category: product.category
   }
@@ -877,9 +957,15 @@ const editShowcaseProduct = (product: ShowcaseProduct) => {
   showShowcaseForm.value = true
 }
 
-const deleteShowcaseConfirm = (id: string) => {
+const deleteShowcaseConfirm = async (id: string) => {
   if (confirm('¿Estás seguro de eliminar esta novedad?')) {
-    deleteShowcaseProduct(id)
+    try {
+      await deleteShowcaseProduct(id)
+      console.log('✅ Producto showcase eliminado')
+    } catch (error) {
+      console.error('❌ Error eliminando producto showcase:', error)
+      alert('Error al eliminar la novedad')
+    }
   }
 }
 
@@ -907,12 +993,15 @@ const saveShowcaseProduct = async () => {
     }
 
     if (editingShowcaseProduct.value) {
-      updateShowcaseProduct(editingShowcaseProduct.value.id, showcaseForm.value)
+      await updateShowcaseProduct(editingShowcaseProduct.value.id, showcaseForm.value)
+      console.log('✅ Producto showcase actualizado')
     } else {
-      addShowcaseProduct(showcaseForm.value)
+      await addShowcaseProduct(showcaseForm.value)
+      console.log('✅ Producto showcase agregado')
     }
     closeShowcaseForm()
   } catch (e: unknown) {
+    console.error('❌ Error guardando producto showcase:', e)
     const msg = typeof e === 'object' && e && 'message' in e ? (e as { message?: string }).message : undefined
     alert(msg || 'Ocurrió un problema al guardar la novedad.')
   } finally {
@@ -929,6 +1018,7 @@ const closeShowcaseForm = () => {
   showcaseForm.value = {
     name: '',
     description: '',
+    price: 0,
     image: '',
     category: ''
   }
@@ -1093,24 +1183,13 @@ const saveProduct = () => {
   closeProductForm()
 }
 
-const saveCategory = () => {
+const saveCategory = async () => {
   if (editingCategory.value) {
     // Actualizar categoría existente
-    const index = categories.value.findIndex(c => c.id === editingCategory.value!.id)
-    if (index !== -1) {
-      categories.value[index] = {
-        ...editingCategory.value,
-        ...categoryForm.value
-      }
-    }
+    await updateCategory(Number(editingCategory.value.id), categoryForm.value)
   } else {
     // Crear nueva categoría
-    const newCategory: Category = {
-      id: Date.now().toString(),
-      ...categoryForm.value,
-      createdAt: new Date()
-    }
-    categories.value.push(newCategory)
+    await addCategory(categoryForm.value)
   }
   closeCategoryForm()
 }
@@ -1463,6 +1542,59 @@ const closeCategoryForm = () => {
 .empty-state p {
   margin: 0 0 30px;
   font-size: 1rem;
+}
+
+/* Loading and Error States */
+.loading-state, .error-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.loading-state p, .error-state p {
+  margin-top: 20px;
+  font-size: 1rem;
+  color: var(--brand-accent-alt);
+}
+
+.error-state {
+  color: #f44336;
+}
+
+.error-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: var(--brand-primary);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Product info in sales table */
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.product-name {
+  font-weight: 500;
+}
+
+.product-color {
+  font-size: 0.85rem;
+  color: var(--brand-accent-alt);
 }
 
 /* === SELECTOR DE COLORES === */

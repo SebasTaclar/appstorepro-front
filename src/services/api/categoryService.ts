@@ -8,13 +8,33 @@ import type {
 
 class CategoryService {
   /**
-   * Obtiene todas las categorías
+   * Obtiene todas las categorías con filtros opcionales
    */
-  async getCategories(): Promise<ApiResponse<GetCategoriesResponse>> {
+  async getCategories(params?: {
+    name?: string
+    description?: string
+  }): Promise<ApiResponse<GetCategoriesResponse>> {
     try {
-      return await apiClient.get<GetCategoriesResponse>('/categories')
+      let endpoint = '/categories'
+
+      // Agregar query params si existen
+      if (params) {
+        const queryParams = new URLSearchParams()
+        if (params.name) queryParams.append('name', params.name)
+        if (params.description) queryParams.append('description', params.description)
+
+        const queryString = queryParams.toString()
+        if (queryString) {
+          endpoint += `?${queryString}`
+        }
+      }
+
+      console.log('🌐 [categoryService] Llamando GET', endpoint)
+      const result = await apiClient.get<GetCategoriesResponse>(endpoint)
+      console.log('📥 [categoryService] Respuesta recibida:', result)
+      return result
     } catch (error) {
-      console.error('Error fetching categories:', error)
+      console.error('❌ [categoryService] Error fetching categories:', error)
       throw error
     }
   }

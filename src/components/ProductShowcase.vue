@@ -54,11 +54,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useProducts } from '@/composables/useProducts'
 
 // Usar el composable de productos para novedades
-const { showcaseProducts, getCategoryById } = useProducts()
+const { showcaseProducts, getCategoryById, loadShowcaseProducts } = useProducts()
+
+// Cargar productos showcase al montar el componente
+onMounted(async () => {
+  console.log('🌟 [ProductShowcase] Cargando productos showcase...')
+  await loadShowcaseProducts()
+})
 
 // Estado para el modal
 const showModal = ref(false)

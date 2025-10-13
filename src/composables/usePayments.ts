@@ -139,7 +139,7 @@ export function usePayments() {
    */
   const getPurchaseStatus = (wallpaperNumber: number) => {
     return computed(() => {
-      const purchase = userPurchases.value.find((p) => p.wallpaperNumbers.includes(wallpaperNumber))
+      const purchase = userPurchases.value.find((p) => p.wallpaperNumbers?.includes(wallpaperNumber))
       return purchase?.status || null
     })
   }

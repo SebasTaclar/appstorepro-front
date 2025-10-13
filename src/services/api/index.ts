@@ -4,6 +4,7 @@ export * from './apiConfig'
 // Exportar servicios
 export * from './authService'
 export * from './categoryService'
+export * from './productService'
 export * from './playerService'
 export * from './teamService'
 export * from './tournamentService'
