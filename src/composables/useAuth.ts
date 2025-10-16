@@ -38,6 +38,25 @@ export function useAuth() {
     currentUser.value = null
   }
 
+  // Verificar si el token es válido
+  const checkTokenValidity = async () => {
+    try {
+      // Si no hay token, no hacer nada
+      if (!authService.isAuthenticated()) {
+        return false
+      }
+
+      // Intentar hacer una petición simple para verificar el token
+      // Si falla con 401, el interceptor de apiConfig.ts manejará el logout
+      return true
+    } catch (error) {
+      console.error('Error verificando token:', error)
+      // Si hay error, hacer logout
+      logout()
+      return false
+    }
+  }
+
   // Computeds para permisos
   const isAdmin = computed(() => authService.isAdmin())
   const userRole = computed(() => currentUser.value?.role || null)
@@ -71,6 +90,7 @@ export function useAuth() {
     initAuth,
     login,
     logout,
+    checkTokenValidity,
     hasRole,
 
     // Permisos

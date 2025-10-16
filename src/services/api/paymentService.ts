@@ -26,7 +26,6 @@ export interface CreateProductPaymentRequest {
 }
 
 export interface ProductPaymentItem {
-  productId: number
   productName: string
   quantity: number
   unitPrice: number
@@ -52,8 +51,8 @@ export interface ProductPaymentResponse {
 }
 
 export interface Purchase {
-  id: string | number
-  wallpaperNumbers?: number[]
+  id: number
+  items: ProductPaymentItem[]
   buyerEmail: string
   buyerName: string
   buyerContactNumber?: string
@@ -61,14 +60,10 @@ export interface Purchase {
   shippingAddress?: string
   status: 'PENDING' | 'APPROVED' | 'COMPLETED' | 'REJECTED' | 'CANCELLED'
   orderStatus?: 'PENDING' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED'
-  amount?: number
-  totalAmount?: number
+  amount: number
   currency: string
-  items?: ProductPaymentItem[]
   createdAt: string
   updatedAt: string
-  paymentProvider?: string
-  wompiTransactionId?: string
 }
 
 export interface GetPurchasesResponse {
@@ -187,22 +182,22 @@ export class PaymentService {
   }
 
   /**
-   * Verificar si un usuario ya compró un wallpaper específico
+   * Verificar si un usuario ya compró un producto específico
+   * @deprecated - Método legacy de wallpapers, adaptar para productos si es necesario
    */
-  async hasUserPurchasedWallpaper(email: string, wallpaperNumber: number): Promise<boolean> {
+  async hasUserPurchasedProduct(email: string, productName: string): Promise<boolean> {
     try {
       const response = await this.getPurchasesByEmail(email)
       if (response.success && response.data) {
         return response.data.purchases.some(
           (purchase) =>
-            purchase.wallpaperNumbers &&
-            purchase.wallpaperNumbers.includes(wallpaperNumber) &&
-            (purchase.status === 'APPROVED' || purchase.status === 'PENDING'),
+            purchase.items?.some((item) => item.productName === productName) &&
+            (purchase.status === 'APPROVED' || purchase.status === 'COMPLETED'),
         )
       }
       return false
     } catch (error) {
-      console.error('Error checking wallpaper purchase:', error)
+      console.error('Error checking product purchase:', error)
       return false
     }
   }

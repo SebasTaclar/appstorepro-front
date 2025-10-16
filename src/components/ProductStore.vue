@@ -388,6 +388,12 @@ const filteredProducts = computed(() => {
         category: getCategoryById(p.category)?.name || 'Sin categoría',
         inStock: p.status === 'available'
       }))
+      .sort((a, b) => {
+        // Primero los disponibles (available), luego los próximamente (coming-soon)
+        if (a.status === 'available' && b.status !== 'available') return -1
+        if (a.status !== 'available' && b.status === 'available') return 1
+        return 0
+      })
   }
 
   return products.value
@@ -397,6 +403,12 @@ const filteredProducts = computed(() => {
       category: getCategoryById(p.category)?.name || 'Sin categoría',
       inStock: p.status === 'available'
     }))
+    .sort((a, b) => {
+      // Primero los disponibles (available), luego los próximamente (coming-soon)
+      if (a.status === 'available' && b.status !== 'available') return -1
+      if (a.status !== 'available' && b.status === 'available') return 1
+      return 0
+    })
 })
 
 // Colores de Apple predeterminados (incluye variantes en inglés y español)
@@ -537,6 +549,31 @@ const getColorHex = (colorName: string): string => {
   .products-grid {
     grid-template-columns: 1fr;
     gap: 2rem;
+  }
+
+  .category-filters {
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .filter-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    border-radius: 20px;
+  }
+}
+
+@media (max-width: 400px) {
+  .category-filters {
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    border-radius: 18px;
+    border-width: 1.5px;
   }
 }
 

@@ -131,13 +131,14 @@ const showProductDetail = (product: {
 }
 
 .products-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.5rem;
   margin-top: 0.25rem;
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
+  justify-content: center;
 }
 
 /* Estilos para tarjetas circulares */
@@ -161,8 +162,8 @@ const showProductDetail = (product: {
 
 .product-image-circular {
   position: relative;
-  width: 140px;
-  height: 140px;
+  width: 180px;
+  height: 180px;
   border-radius: 50%;
   overflow: hidden;
   border: 4px solid #60a5fa;
@@ -233,10 +234,10 @@ const showProductDetail = (product: {
 .modal-content {
   background: #2a2a2a;
   border-radius: 20px;
-  max-width: 600px;
+  max-width: 900px;
   width: 90%;
-  max-height: 80vh;
-  overflow: hidden;
+  max-height: 90vh;
+  overflow: auto;
   border: 1px solid #333;
   animation: slideUp 0.3s ease;
 }
@@ -292,17 +293,20 @@ const showProductDetail = (product: {
 
 .modal-image {
   width: 100%;
-  height: 250px;
+  height: 450px;
   border-radius: 15px;
   overflow: hidden;
   margin-bottom: 1.5rem;
   background: #1f1f1f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .modal-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .modal-info {
@@ -340,24 +344,21 @@ const showProductDetail = (product: {
 /* Responsive Design */
 @media (max-width: 1200px) {
   .products-grid {
-    grid-template-columns: repeat(4, 1fr);
     max-width: 800px;
   }
 }
 
 @media (max-width: 1024px) {
   .products-grid {
-    grid-template-columns: repeat(3, 1fr);
     max-width: 600px;
-    gap: 1.2rem;
+    gap: 2rem;
   }
 }
 
 @media (max-width: 768px) {
   .products-grid {
-    grid-template-columns: repeat(2, 1fr);
     max-width: 400px;
-    gap: 1rem;
+    gap: 1.5rem;
   }
 
   .product-image-circular {
@@ -375,6 +376,7 @@ const showProductDetail = (product: {
 
   .modal-content {
     width: 95%;
+    max-height: 85vh;
   }
 
   .modal-header {
@@ -386,7 +388,7 @@ const showProductDetail = (product: {
   }
 
   .modal-image {
-    height: 200px;
+    height: 300px;
   }
 }
 
@@ -394,7 +396,7 @@ const showProductDetail = (product: {
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
     max-width: 400px;
-    gap: 0.8rem;
+    gap: 1.2rem;
   }
 
   .product-image-circular {
