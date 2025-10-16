@@ -68,6 +68,30 @@ export class ApiClient {
       const response = await fetch(url, config)
       const data = await response.json()
 
+      // Verificar si el token ha expirado (status 401 o mensaje específico)
+      if (
+        (response.status === 401 || response.status === 403) &&
+        (data.message?.toLowerCase().includes('token has expired') ||
+          data.message?.toLowerCase().includes('token expired') ||
+          data.message?.toLowerCase().includes('jwt expired') ||
+          data.message?.toLowerCase().includes('unauthorized'))
+      ) {
+        console.error('🔑 [apiConfig] Token expirado o inválido, cerrando sesión...')
+        // Limpiar token y datos de usuario
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('currentUser')
+
+        // Mostrar alerta al usuario
+        alert('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.')
+
+        // Redirigir al login después de un pequeño delay
+        setTimeout(() => {
+          window.location.href = '/login'
+        }, 500)
+
+        throw new Error('Sesión expirada')
+      }
+
       if (!response.ok) {
         throw new Error(data.message || `HTTP Error: ${response.status}`)
       }

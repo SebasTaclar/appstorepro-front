@@ -68,9 +68,17 @@ const getCategoryNameCached = (id: string): string | undefined => {
 }
 
 export function useProducts() {
-  // Computed para productos disponibles (para ProductStore) - incluye available y coming-soon
+  // Computed para productos disponibles (para ProductStore) - EXCLUYE productos showcase/novedades
   const availableProducts = computed(() =>
-    backendProducts.value.filter(p => p.status === 'available' || p.status === 'coming-soon')
+    backendProducts.value.filter(p =>
+      (p.status === 'available' || p.status === 'coming-soon') &&
+      !p.isShowcase  // Excluir productos que son novedades
+    )
+  )
+
+  // Computed para productos regulares (para AdminDashboard) - EXCLUYE productos showcase
+  const regularProducts = computed(() =>
+    backendProducts.value.filter(p => !p.isShowcase)
   )
 
   // Funciones para gestionar productos - Ahora usan el backend
@@ -262,7 +270,8 @@ export function useProducts() {
 
   return {
     // State
-    products: backendProducts, // Productos desde backend
+    products: backendProducts, // Productos desde backend (TODOS incluyendo showcase)
+    regularProducts, // Productos regulares (SIN showcase) - para Admin Dashboard
     categories: backendCategories, // Categorías desde backend
     showcaseProducts,
     availableProducts,

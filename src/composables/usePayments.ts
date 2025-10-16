@@ -113,16 +113,16 @@ export function usePayments() {
   }
 
   /**
-   * Verificar si el usuario ya compró un wallpaper específico
+   * Verificar si el usuario ya compró un producto específico
    */
-  const hasUserPurchasedWallpaper = async (
+  const hasUserPurchasedProduct = async (
     email: string,
-    wallpaperNumber: number,
+    productName: string,
   ): Promise<boolean> => {
     try {
-      return await paymentService.hasUserPurchasedWallpaper(email, wallpaperNumber)
+      return await paymentService.hasUserPurchasedProduct(email, productName)
     } catch (err) {
-      console.error('Error checking wallpaper purchase:', err)
+      console.error('Error checking product purchase:', err)
       return false
     }
   }
@@ -135,11 +135,13 @@ export function usePayments() {
   }
 
   /**
-   * Verificar el estado de una compra específica
+   * Verificar el estado de una compra por producto
    */
-  const getPurchaseStatus = (wallpaperNumber: number) => {
+  const getPurchaseStatusByProduct = (productName: string) => {
     return computed(() => {
-      const purchase = userPurchases.value.find((p) => p.wallpaperNumbers?.includes(wallpaperNumber))
+      const purchase = userPurchases.value.find((p) =>
+        p.items?.some((item) => item.productName === productName),
+      )
       return purchase?.status || null
     })
   }
@@ -179,9 +181,9 @@ export function usePayments() {
     createPayment,
     createWompiPayment,
     getUserPurchases,
-    hasUserPurchasedWallpaper,
+    hasUserPurchasedProduct,
     clearPaymentUrl,
-    getPurchaseStatus,
+    getPurchaseStatusByProduct,
     handlePaymentSuccess,
   }
 }

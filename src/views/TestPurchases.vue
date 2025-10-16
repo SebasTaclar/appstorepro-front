@@ -48,7 +48,7 @@
           <p v-if="purchase.shippingAddress">
             <strong>Dirección:</strong> {{ purchase.shippingAddress }}
           </p>
-          <p><strong>Total:</strong> ${{ (purchase.totalAmount || purchase.amount)?.toLocaleString() }} {{ purchase.currency }}</p>
+          <p><strong>Total:</strong> ${{ purchase.amount?.toLocaleString() }} {{ purchase.currency }}</p>
           <p><strong>Fecha:</strong> {{ formatDate(purchase.createdAt) }}</p>
         </div>
 
@@ -60,10 +60,6 @@
             <p v-if="item.selectedColor">Color: {{ item.selectedColor }}</p>
             <p>Subtotal: ${{ item.totalPrice?.toLocaleString() }}</p>
           </div>
-        </div>
-
-        <div v-if="purchase.wallpaperNumbers" class="wallpapers">
-          <p><strong>Wallpapers:</strong> {{ purchase.wallpaperNumbers.join(', ') }}</p>
         </div>
       </div>
     </div>

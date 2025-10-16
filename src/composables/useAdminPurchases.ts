@@ -59,16 +59,16 @@ export function useAdminPurchases() {
   const stats = computed(() => {
     const totalRevenue = purchases.value
       .filter((p) => p.status === 'APPROVED' || p.status === 'COMPLETED')
-      .reduce((sum, p) => sum + (p.amount || p.totalAmount || 0), 0)
+      .reduce((sum, p) => sum + (p.amount || 0), 0)
 
-    const totalWallpapersSold = purchases.value
+    const totalItemsSold = purchases.value
       .filter((p) => p.status === 'APPROVED' || p.status === 'COMPLETED')
-      .reduce((sum, p) => sum + (p.wallpaperNumbers?.length || 0), 0)
+      .reduce((sum, p) => sum + (p.items?.length || 0), 0)
 
     return {
       totalPurchases: purchases.value.length,
       totalRevenue,
-      totalWallpapersSold,
+      totalItemsSold,
       pendingPurchases: purchasesByStatus.value.PENDING.length,
       approvedPurchases: purchasesByStatus.value.APPROVED.length,
       completedPurchases: purchasesByStatus.value.COMPLETED.length,

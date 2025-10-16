@@ -236,7 +236,7 @@
               <thead>
                 <tr>
                   <th>Cliente</th>
-                  <th>Producto</th>
+                  <th>Productos</th>
                   <th>Cantidad</th>
                   <th>Total</th>
                   <th>Estado</th>
@@ -253,14 +253,44 @@
                   </td>
                   <td>
                     <div class="product-info">
-                      <div class="product-name">{{ sale.productName }}</div>
-                      <div v-if="sale.selectedColor" class="product-color">
-                        Color: {{ sale.selectedColor }}
+                      <!-- Un solo producto -->
+                      <div v-if="sale.items && sale.items.length === 1" class="single-product">
+                        <div class="product-name">{{ sale.items[0].productName }}</div>
+                        <div v-if="sale.items[0].selectedColor" class="product-color">
+                          <span class="color-dot" :style="{ backgroundColor: getColorHex(sale.items[0].selectedColor) }"></span>
+                          {{ sale.items[0].selectedColor }}
+                        </div>
                       </div>
+
+                      <!-- Múltiples productos -->
+                      <div v-else-if="sale.items && sale.items.length > 1" class="multiple-products">
+                        <div class="products-summary">
+                          <span class="products-badge">{{ sale.items.length }} productos</span>
+                        </div>
+                        <details class="products-details">
+                          <summary class="products-toggle">Ver detalles</summary>
+                          <ul class="products-list">
+                            <li v-for="(item, idx) in sale.items" :key="idx" class="product-item">
+                              <span class="item-name">{{ item.productName }}</span>
+                              <span class="item-quantity">x{{ item.quantity }}</span>
+                              <span v-if="item.selectedColor" class="item-color">
+                                <span class="color-dot-small" :style="{ backgroundColor: getColorHex(item.selectedColor) }"></span>
+                                {{ item.selectedColor }}
+                              </span>
+                            </li>
+                          </ul>
+                        </details>
+                      </div>
+
+                      <!-- Fallback -->
+                      <div v-else class="product-name">{{ sale.productName }}</div>
                     </div>
                   </td>
                   <td>
-                    <span class="quantity">{{ sale.quantity }}</span>
+                    <div class="quantity-info">
+                      <span class="quantity-badge">{{ sale.quantity }}</span>
+                      <span v-if="sale.items && sale.items.length > 1" class="quantity-label">unidades totales</span>
+                    </div>
                   </td>
                   <td>
                     <span class="amount">${{ sale.totalAmount.toLocaleString() }}</span>
@@ -353,7 +383,7 @@
                     v-for="color in appleColors"
                     :key="color.name"
                     class="color-option"
-                    :class="{ selected: productForm.colors.includes(color.name) }"
+                    :class="{ selected: isColorSelected(color.name) }"
                     @click="toggleProductColor(color.name)"
                   >
                     <div class="color-circle" :style="{ background: color.hex }"></div>
@@ -522,9 +552,10 @@
               <label>Descripción *</label>
               <textarea v-model="showcaseForm.description" class="form-input" rows="3" required></textarea>
             </div>
-            <div class="form-group">
-              <label>Precio *</label>
-              <input v-model.number="showcaseForm.price" type="number" class="form-input" min="0" step="1000" required />
+            <!-- Campo de precio oculto - siempre será 0 para novedades -->
+            <div class="form-group" style="display: none;">
+              <label>Precio</label>
+              <input v-model.number="showcaseForm.price" type="number" class="form-input" min="0" step="1000" />
             </div>
             <div class="form-group">
               <label>Imagen del Producto *</label>
@@ -615,7 +646,7 @@ import { useProducts, type ShowcaseProduct } from '@/composables/useProducts'
 import type { Product } from '@/types/ProductType'
 import type { Category, CreateCategoryRequest } from '@/types/CategoryType'
 import { paymentService } from '@/services/api/paymentService'
-import type { Purchase } from '@/services/api/paymentService'
+import type { Purchase, ProductPaymentItem } from '@/services/api/paymentService'
 
 // Tipos
 interface Sale {
@@ -630,6 +661,7 @@ interface Sale {
   status: 'completed' | 'pending' | 'cancelled'
   date: Date
   selectedColor?: string
+  items?: ProductPaymentItem[] // Items detallados de la compra
 }
 
 // Estado reactivo (persistente)
@@ -654,7 +686,7 @@ const showcaseFileInput = ref<HTMLInputElement | null>(null)
 
 // Usar el composable de productos
 const {
-  products,
+  regularProducts, // Productos regulares (sin showcase) - para mostrar en sección Productos
   showcaseProducts,
   categories,
   availableProducts,
@@ -672,6 +704,9 @@ const {
   updateCategory,
   deleteCategory
 } = useProducts()
+
+// Alias para compatibilidad: usar regularProducts en la vista de productos
+const products = regularProducts
 
 // Cargar categorías y productos desde el backend al montar el componente
 onMounted(async () => {
@@ -698,21 +733,31 @@ const salesError = ref('')
 // Transform Purchase to Sale format
 const transformPurchaseToSale = (purchase: Purchase): Sale => {
   const firstItem = purchase.items?.[0]
-  // Try both totalAmount and amount properties
-  const totalAmount = purchase.totalAmount || purchase.amount || 0
+  const itemCount = purchase.items?.length || 0
+  const totalQuantity = purchase.items?.reduce((sum, item) => sum + item.quantity, 0) || 0
+
+  // Generar nombre descriptivo del producto
+  let productName = 'Múltiples productos'
+  if (itemCount === 1) {
+    productName = firstItem?.productName || 'Producto desconocido'
+  } else if (itemCount > 1) {
+    productName = `${itemCount} productos diferentes`
+  }
 
   return {
     id: purchase.id.toString(),
-    productId: firstItem?.productId?.toString() || '',
-    productName: firstItem?.productName || 'Múltiples productos',
+    productId: '', // No longer available from API
+    productName: productName,
     customerName: purchase.buyerName,
     customerEmail: purchase.buyerEmail,
-    quantity: firstItem?.quantity || 1,
+    quantity: totalQuantity, // Suma total de cantidades
     unitPrice: firstItem?.unitPrice || 0,
-    totalAmount: totalAmount,
+    totalAmount: purchase.amount, // Use amount directly from API
     status: mapPurchaseStatus(purchase.status),
     date: new Date(purchase.createdAt),
-    selectedColor: firstItem?.selectedColor
+    selectedColor: firstItem?.selectedColor,
+    // Información adicional para mostrar detalles
+    items: purchase.items
   }
 }
 
@@ -739,7 +784,6 @@ const loadPurchases = async () => {
         console.log('📦 Transformando purchase:', {
           id: purchase.id,
           amount: purchase.amount,
-          totalAmount: purchase.totalAmount,
           items: purchase.items
         })
         return transformPurchaseToSale(purchase)
@@ -801,12 +845,11 @@ const showcaseForm = ref({
 // Estado de guardado de showcase (evita clicks múltiples y sensación de "bloqueo")
 const isSavingShowcase = ref(false)
 
-// Validación rápida del formulario de novedad
+// Validación rápida del formulario de novedad (precio no requerido - siempre será 0)
 const showcaseFormValid = computed(() => {
   return (
     showcaseForm.value.name.trim().length > 0 &&
     showcaseForm.value.description.trim().length > 0 &&
-    showcaseForm.value.price > 0 &&
     showcaseForm.value.image.trim().length > 0 &&
     showcaseForm.value.category.trim().length > 0
   )
@@ -845,6 +888,38 @@ const pendingSales = computed(() =>
 )
 
 const totalSalesCount = computed(() => sales.value.length)
+
+// Helper para convertir nombres de colores a hex
+const getColorHex = (colorName: string): string => {
+  const colorMap: Record<string, string> = {
+    'space gray': '#5c5c60',
+    'silver': '#e3e4e6',
+    'gold': '#fad5a5',
+    'rose gold': '#e8c5a0',
+    'deep purple': '#5f5995',
+    'purple': '#5f5995',
+    'blue': '#1976d2',
+    'azul': '#1976d2',
+    'azul tecnologico': '#1e3a8a',
+    'green': '#4caf50',
+    'verde': '#4caf50',
+    'red': '#f44336',
+    'rojo': '#f44336',
+    'black': '#000000',
+    'negro': '#000000',
+    'white': '#ffffff',
+    'blanco': '#ffffff',
+    'pink': '#e91e63',
+    'rosa': '#e91e63',
+    'yellow': '#ffeb3b',
+    'amarillo': '#ffeb3b',
+    'orange': '#ff9800',
+    'naranja': '#ff9800'
+  }
+
+  const normalized = colorName.toLowerCase().trim()
+  return colorMap[normalized] || '#9e9e9e' // Gris por defecto
+}
 
 // Cambio de pestaña con persistencia
 const selectTab = (tabId: string) => {
@@ -894,10 +969,10 @@ const editProduct = (product: Product) => {
     description: product.description,
     price: product.price,
     originalPrice: product.originalPrice || 0,
-    images: product.images || [],
+    images: product.images ? [...product.images] : [],
     category: product.category,
     status: product.status,
-    colors: product.colors || []
+    colors: product.colors ? [...product.colors] : []
   }
   // Configurar preview con la primera imagen si existe
   if (product.images && product.images.length > 0) {
@@ -930,7 +1005,17 @@ const deleteProductConfirm = (id: string) => {
 
 // Función wrapper para eliminar categoría con confirmación
 const handleDeleteCategory = async (id: string) => {
-  if (confirm('¿Estás seguro de eliminar esta categoría?')) {
+  const productsCount = getProductsInCategory(id)
+
+  let confirmMessage = '¿Estás seguro de eliminar esta categoría?'
+
+  if (productsCount > 0) {
+    confirmMessage = `⚠️ ADVERTENCIA: Esta categoría tiene ${productsCount} producto${productsCount > 1 ? 's' : ''} asociado${productsCount > 1 ? 's' : ''}.\n\n` +
+      `Si eliminas esta categoría, ${productsCount > 1 ? 'estos productos' : 'este producto'} quedará${productsCount > 1 ? 'n' : ''} sin categoría asignada.\n\n` +
+      `¿Estás seguro de que deseas continuar?`
+  }
+
+  if (confirm(confirmMessage)) {
     await deleteCategory(Number(id))
   }
 }
@@ -941,7 +1026,7 @@ const editShowcaseProduct = (product: ShowcaseProduct) => {
   showcaseForm.value = {
     name: product.name,
     description: product.description,
-    price: product.price,
+    price: 5000, // Siempre 0 para novedades
     image: product.image,
     category: product.category
   }
@@ -978,6 +1063,9 @@ const saveShowcaseProduct = async () => {
   try {
     isSavingShowcase.value = true
 
+    // Asegurar que el precio siempre sea 0 para novedades
+    showcaseForm.value.price = 5000
+
     // Validación extra de URL (si se usa modo URL)
     if (imageUploadMethod.value === 'url' && showcaseForm.value.image.startsWith('http')) {
       const testImg = new Image()
@@ -993,6 +1081,12 @@ const saveShowcaseProduct = async () => {
     }
 
     if (editingShowcaseProduct.value) {
+      // Actualizar novedad existente - mostrar confirmación
+      const confirmMessage = `¿Estás seguro de que deseas actualizar la novedad "${editingShowcaseProduct.value.name}"?\n\nSe actualizarán todos los cambios realizados.`
+      if (!confirm(confirmMessage)) {
+        isSavingShowcase.value = false
+        return
+      }
       await updateShowcaseProduct(editingShowcaseProduct.value.id, showcaseForm.value)
       console.log('✅ Producto showcase actualizado')
     } else {
@@ -1160,21 +1254,36 @@ const removeShowcaseImage = () => {
   }
 }
 
+// Función para verificar si un color está seleccionado (comparación insensible a mayúsculas)
+const isColorSelected = (colorName: string) => {
+  return productForm.value.colors.some(
+    c => c.toLowerCase() === colorName.toLowerCase()
+  )
+}
+
 // Función para manejar la selección de colores
 const toggleProductColor = (colorName: string) => {
-  const index = productForm.value.colors.indexOf(colorName)
+  // Buscar el índice comparando en minúsculas para evitar problemas de capitalización
+  const index = productForm.value.colors.findIndex(
+    c => c.toLowerCase() === colorName.toLowerCase()
+  )
+
   if (index > -1) {
     // Si ya está seleccionado, lo removemos
     productForm.value.colors.splice(index, 1)
   } else {
-    // Si no está seleccionado, lo agregamos
+    // Si no está seleccionado, lo agregamos (usando el formato correcto del appleColors)
     productForm.value.colors.push(colorName)
   }
 }
 
 const saveProduct = () => {
   if (editingProduct.value) {
-    // Actualizar producto existente
+    // Actualizar producto existente - mostrar confirmación
+    const confirmMessage = `¿Estás seguro de que deseas actualizar el producto "${editingProduct.value.name}"?\n\nSe actualizarán todos los cambios realizados.`
+    if (!confirm(confirmMessage)) {
+      return
+    }
     updateProduct(editingProduct.value.id, productForm.value)
   } else {
     // Crear nuevo producto
@@ -1185,7 +1294,11 @@ const saveProduct = () => {
 
 const saveCategory = async () => {
   if (editingCategory.value) {
-    // Actualizar categoría existente
+    // Actualizar categoría existente - mostrar confirmación
+    const confirmMessage = `¿Estás seguro de que deseas actualizar la categoría "${editingCategory.value.name}"?\n\nSe actualizarán todos los cambios realizados.`
+    if (!confirm(confirmMessage)) {
+      return
+    }
     await updateCategory(Number(editingCategory.value.id), categoryForm.value)
   } else {
     // Crear nueva categoría
@@ -2209,16 +2322,18 @@ const closeCategoryForm = () => {
   background: var(--brand-surface);
   color: var(--brand-primary-contrast);
   font-weight: 600;
-  padding: 15px 12px;
-  text-align: left;
+  padding: 18px 100px;
+  text-align: center;
   border-bottom: 2px solid var(--brand-border);
   white-space: nowrap;
+  font-size: 0.95rem;
 }
 
 .sales-table td {
-  padding: 15px 12px;
+  padding: 18px 60px;
   border-bottom: 1px solid var(--brand-border);
   color: var(--brand-accent-alt);
+  text-align: center;
 }
 
 .sale-row {
@@ -2238,16 +2353,18 @@ const closeCategoryForm = () => {
 .customer-name {
   font-weight: 600;
   color: var(--brand-primary-contrast);
+  font-size: 0.85rem;
 }
 
 .customer-email {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--brand-accent-alt);
 }
 
 .product-name {
   font-weight: 500;
   color: var(--brand-primary-contrast);
+  font-size: 0.85rem;
 }
 
 .quantity {
@@ -2264,13 +2381,13 @@ const closeCategoryForm = () => {
 .amount {
   font-weight: 700;
   color: var(--brand-success);
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .status-badge {
   padding: 6px 12px;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   display: inline-block;
@@ -2296,12 +2413,182 @@ const closeCategoryForm = () => {
 
 .date {
   color: var(--brand-accent-alt);
-  font-size: 0.85rem;
+  font-size: 0.75rem;
+}
+
+/* Estilos para productos múltiples */
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.single-product {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.product-color {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--brand-accent-alt);
+}
+
+.color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.multiple-products {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.products-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.products-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.products-details {
+  margin-top: 4px;
+}
+
+.products-toggle {
+  cursor: pointer;
+  color: var(--brand-accent);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 4px 0;
+  user-select: none;
+  transition: color 0.2s;
+}
+
+.products-toggle:hover {
+  color: var(--brand-primary-contrast);
+}
+
+.products-toggle::marker {
+  color: var(--brand-accent);
+}
+
+.products-list {
+  list-style: none;
+  padding: 8px 0 0 0;
+  margin: 4px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--brand-border);
+}
+
+.product-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--brand-surface);
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.item-name {
+  flex: 1;
+  font-weight: 500;
+  color: var(--brand-primary-contrast);
+}
+
+.item-quantity {
+  background: var(--brand-accent);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.item-color {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  color: var(--brand-accent-alt);
+}
+
+.color-dot-small {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos para cantidad mejorada */
+.quantity-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.quantity-header {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--brand-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+  width: 100%;
+}
+
+.quantity-badge {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: inline-block;
+  min-width: 40px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(245, 87, 108, 0.3);
+}
+
+.quantity-sublabel {
+  font-size: 0.65rem;
+  color: var(--brand-accent-alt);
+  text-align: left;
+  line-height: 1.2;
+  width: 100%;
+}
+
+.quantity-label {
+  font-size: 0.65rem;
+  color: var(--brand-accent-alt);
+  text-align: center;
+  line-height: 1.2;
 }
 
 @media (max-width: 768px) {
   .sales-stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     margin-bottom: 20px;
   }
@@ -2739,7 +3026,7 @@ const closeCategoryForm = () => {
 
   /* Sales section optimizations for very small screens */
   .sales-stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     margin-bottom: 15px;
   }
