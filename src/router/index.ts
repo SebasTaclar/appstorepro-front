@@ -29,6 +29,36 @@ const router = createRouter({
     },
 
     {
+      path: '/iphone',
+      name: 'iphone',
+      component: () => import('../views/IphonePage.vue'),
+    },
+
+    {
+      path: '/mac',
+      name: 'mac',
+      component: () => import('../views/MacPage.vue'),
+    },
+
+    {
+      path: '/ipad',
+      name: 'ipad',
+      component: () => import('../views/IpadPage.vue'),
+    },
+
+    {
+      path: '/watch',
+      name: 'watch',
+      component: () => import('../views/AppleWatchPage.vue'),
+    },
+
+    {
+      path: '/accesorios',
+      name: 'accesorios',
+      component: () => import('../views/AccesoriosPage.vue'),
+    },
+
+    {
       path: '/admin/products',
       name: 'admin-products',
       component: () => import('../views/AdminDashboardNew.vue'),

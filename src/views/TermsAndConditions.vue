@@ -14,26 +14,27 @@
         <section class="terms-section">
           <h2>1. Información General</h2>
           <p>
-            Bienvenido a AppsStore Pro. Al acceder y realizar compras en nuestra plataforma, aceptas cumplir con estos términos y condiciones.
-            AppsStore Pro es una tienda en línea especializada en la venta de productos digitales, merchandising deportivo y artículos relacionados
-            con equipos de fútbol profesional.
+            Bienvenido a Apple Store Pro. Al acceder y realizar compras en nuestra plataforma, aceptas cumplir con estos términos y condiciones.
+            Apple Store Pro es una tienda en línea especializada en la venta de productos Apple y tecnología premium.
           </p>
         </section>
 
         <section class="terms-section">
           <h2>2. Productos y Servicios</h2>
           <p>
-            Ofrecemos una variedad de productos que incluyen:
+            Ofrecemos una variedad de productos Apple y accesorios que incluyen:
           </p>
           <ul>
-            <li>Camisetas oficiales y réplicas de equipos de fútbol</li>
-            <li>Merchandising deportivo (gorras, bufandas, banderines, etc.)</li>
-            <li>Productos personalizados con nombres y números</li>
-            <li>Artículos de colección y ediciones limitadas</li>
+            <li>iPhone (todos los modelos y generaciones)</li>
+            <li>Mac (MacBook Air, MacBook Pro, iMac, Mac mini, Mac Studio)</li>
+            <li>iPad (iPad Pro, iPad Air, iPad, iPad mini)</li>
+            <li>Apple Watch (Series, SE, Ultra)</li>
+            <li>Accesorios oficiales Apple (AirPods, Apple Pencil, Magic Keyboard, cargadores, fundas)</li>
+            <li>Productos con múltiples opciones de colores y configuraciones</li>
           </ul>
           <p>
             Nos reservamos el derecho de modificar, discontinuar o actualizar cualquier producto sin previo aviso.
-            Las imágenes y descripciones de los productos son representativas y pueden variar ligeramente del producto real.
+            Las imágenes y descripciones de los productos son representativas. Todos los productos Apple son originales y cuentan con garantía oficial.
           </p>
         </section>
 
@@ -50,7 +51,6 @@
             <li>Tarjetas de crédito y débito (Visa, Mastercard, American Express)</li>
             <li>PSE (Pagos Seguros en Línea)</li>
             <li>Transferencias bancarias</li>
-            <li>Pago contra entrega (según disponibilidad en tu ciudad)</li>
           </ul>
         </section>
 
@@ -73,31 +73,30 @@
         </section>
 
         <section class="terms-section">
-          <h2>5. Cambios y Devoluciones</h2>
+          <h2>5. Devoluciones y Reembolsos</h2>
           <p>
-            Aceptamos cambios y devoluciones dentro de los 15 días posteriores a la recepción del producto, siempre que:
+            Aceptamos devoluciones dentro de los 15 días posteriores a la recepción del producto, siempre y cuando:
           </p>
           <ul>
-            <li>El producto esté en su empaque original y sin uso</li>
-            <li>Se conserven todas las etiquetas y accesorios</li>
-            <li>Se presente el comprobante de compra</li>
+            <li>El producto se encuentre en perfectas condiciones, sin usar y con empaques originales sellados</li>
+            <li>Se conserve el empaque original de Apple con todos los accesorios incluidos</li>
+            <li>El dispositivo no haya sido activado ni configurado</li>
+            <li>No presente señales de uso, ralladuras o daños</li>
           </ul>
           <p>
-            <strong>Productos no elegibles para devolución:</strong>
-          </p>
-          <ul>
-            <li>Productos personalizados (con nombres o números)</li>
-            <li>Artículos en oferta o liquidación marcados como "venta final"</li>
-            <li>Productos que muestren signos de uso, lavado o daño</li>
-          </ul>
-          <p>
-            Para iniciar un proceso de cambio o devolución, contacta nuestro servicio al cliente a través de
-            nuestro Instagram o correo electrónico. Los costos de envío para devoluciones corren por cuenta del cliente,
-            excepto en casos de productos defectuosos o error en el envío.
+            Para iniciar una devolución, contáctanos a través de nuestros canales de atención al cliente.
+            Los costos de envío para devoluciones corren por cuenta del comprador, salvo que el producto sea defectuoso o presente fallas de fábrica.
           </p>
         </section>
 
         <section class="terms-section">
+          <h2>6. Garantía</h2>
+          <p>
+            Todos nuestros productos Apple cuentan con garantía oficial del fabricante contra defectos de fabricación.
+            La garantía estándar de Apple cubre 1 año desde la fecha de compra. Adicionalmente, ofrecemos asesoría para la contratación de AppleCare+ para extender la protección.
+            La garantía no cubre daños causados por accidentes, líquidos, uso indebido o modificaciones no autorizadas.
+          </p>
+        </section>        <section class="terms-section">
           <h2>6. Garantía de Productos</h2>
           <p>
             Todos nuestros productos cuentan con garantía contra defectos de fabricación. Si recibes un producto defectuoso,
@@ -136,16 +135,11 @@
         <section class="terms-section">
           <h2>8. Propiedad Intelectual</h2>
           <p>
-            Todo el contenido de este sitio web, incluyendo imágenes, logos, diseños, textos y marca, es propiedad de AppsStore Pro
-            o de sus respectivos titulares de licencia. Está prohibida la reproducción, distribución o uso comercial sin autorización expresa.
+            Apple, el logotipo de Apple, iPhone, iPad, Mac, MacBook, Apple Watch, AirPods y otros productos y nombres de Apple son marcas registradas de Apple Inc.
+            Apple Store Pro es un distribuidor autorizado. Todas las marcas y logos son propiedad de sus respectivos titulares.
+            No está permitido el uso no autorizado de estos elementos.
           </p>
-          <p>
-            Las marcas de equipos de fútbol, escudos y logos mostrados son propiedad de sus respectivos clubes y federaciones.
-            Actuamos como distribuidor autorizado de productos oficiales con licencia.
-          </p>
-        </section>
-
-        <section class="terms-section">
+        </section>        <section class="terms-section">
           <h2>9. Responsabilidades del Usuario</h2>
           <p>Al utilizar nuestra plataforma, te comprometes a:</p>
           <ul>
@@ -191,8 +185,7 @@
           </p>
           <ul>
             <li><strong>Instagram:</strong> @appsstorepro</li>
-            <li><strong>Correo electrónico:</strong> contacto@appsstorepro.com</li>
-            <li><strong>Teléfono:</strong> +57 (1) 234-5678</li>
+            <li><strong>Teléfono:</strong> +57 320 986 0099</li>
             <li><strong>Dirección física:</strong> Centro comercial Unilago, Bogotá - Loc. 1-124, Cra. 15 # 78 - 33, Bogotá D.C.</li>
           </ul>
           <p>
@@ -201,31 +194,14 @@
           </p>
         </section>
 
-        <section class="terms-section">
-          <h2>13. Jurisdicción y Ley Aplicable</h2>
-          <p>
-            Estos términos y condiciones se rigen por las leyes de la República de Colombia.
-            Cualquier disputa que surja en relación con estos términos será sometida a la jurisdicción
-            exclusiva de los tribunales competentes de Bogotá, Colombia.
-          </p>
-        </section>
+
 
         <div class="acceptance-section">
-          <div class="checkbox-container">
-            <label class="checkbox-label">
-              <input
-                v-model="termsAccepted"
-                type="checkbox"
-              >
-              <span>He leído y acepto los términos y condiciones de AppsStore Pro</span>
-            </label>
-          </div>
           <button
             class="btn-accept"
-            :disabled="!termsAccepted"
             @click="acceptAndGoBack"
           >
-            Aceptar y continuar
+            He leído y Acepto
           </button>
         </div>
       </div>
@@ -234,11 +210,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const termsAccepted = ref(false)
 
 const goBack = () => {
   // Si hay historial, volver atrás, si no cerrar o ir al home
@@ -254,22 +228,12 @@ const goBack = () => {
 }
 
 const acceptAndGoBack = () => {
-  if (termsAccepted.value) {
-    // Guardar aceptación en sessionStorage (solo para esta sesión)
-    sessionStorage.setItem('termsAccepted', 'true')
-    console.log('✅ Términos aceptados guardados en sessionStorage:', sessionStorage.getItem('termsAccepted'))
+  // Guardar aceptación en sessionStorage (solo para esta sesión)
+  sessionStorage.setItem('termsAccepted', 'true')
+  console.log('✅ Términos aceptados guardados en sessionStorage:', sessionStorage.getItem('termsAccepted'))
 
-    // Si hay historial, volver atrás, si no cerrar o ir al home
-    if (window.history.length > 1) {
-      router.back()
-    } else {
-      window.close()
-      // Si no se puede cerrar, ir al home
-      setTimeout(() => {
-        router.push('/')
-      }, 100)
-    }
-  }
+  // Redirigir al resumen de compras (Checkout)
+  router.push('/checkout')
 }
 </script>
 

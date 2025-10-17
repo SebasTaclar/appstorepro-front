@@ -38,7 +38,6 @@
             <div class="info-content">
               <h3>Llámanos</h3>
               <p class="phone">+57 320 986 0099</p>
-              <p class="phone">+57 317 699 7474</p>
             </div>
           </div>
         </div>
@@ -56,7 +55,7 @@
               <h3>Horarios de Atención</h3>
               <div class="schedule">
                 <p><strong>Lunes - Sábado:</strong> 9:30 AM - 7:00 PM</p>
-                <p><strong>Domingos:</strong> Cerrado</p>
+                <p><strong>Domingos:</strong> Cada 15 Días</p>
               </div>
             </div>
           </div>

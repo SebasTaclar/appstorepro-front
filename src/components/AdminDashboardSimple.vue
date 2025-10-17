@@ -386,7 +386,9 @@
                     :class="{ selected: isColorSelected(color.name) }"
                     @click="toggleProductColor(color.name)"
                   >
-                    <div class="color-circle" :style="{ background: color.hex }"></div>
+                    <div class="color-circle" :style="{ background: color.hex }">
+                      <span v-if="isColorSelected(color.name)" class="check-icon">✓</span>
+                    </div>
                     <span class="color-name">{{ color.name }}</span>
                   </div>
                 </div>
@@ -815,18 +817,20 @@ const productForm = ref({
 
 // Colores de Apple predeterminados
 const appleColors = ref([
-  { name: 'Space Gray', hex: '#5c5c60' },
-  { name: 'Silver', hex: '#e3e4e6' },
-  { name: 'Gold', hex: '#fad5a5' },
-  { name: 'Rose Gold', hex: '#e8c5a0' },
-  { name: 'Deep Purple', hex: '#5f5995' },
-  { name: 'Blue', hex: '#1976d2' },
-  { name: 'Green', hex: '#4caf50' },
-  { name: 'Pink', hex: '#ff69b4' },
-  { name: 'Yellow', hex: '#ffeb3b' },
-  { name: 'Red', hex: '#f44336' },
-  { name: 'Black', hex: '#1a1a1a' },
-  { name: 'White', hex: '#ffffff' }
+  { name: 'Naranja Cósmico', hex: '#ff5e00' },
+  { name: 'Azul Profundo', hex: '#003d5c' },
+  { name: 'Plata', hex: '#c0c0c0' },
+  { name: 'Azul', hex: '#1976d2' },
+  { name: 'Negro', hex: '#000000' },
+  { name: 'Blanco', hex: '#ffffff' },
+  { name: 'Azul Neblina', hex: '#a8c7dd' },
+  { name: 'Dorado Claro', hex: '#f7e7a1' },
+  { name: 'Azul Cielo', hex: '#87ceeb' },
+  { name: 'Rosa', hex: '#ff69b4' },
+  { name: 'Amarillo', hex: '#ffeb3b' },
+  { name: 'Verde', hex: '#4caf50' },
+  { name: 'Púrpura', hex: '#9c27b0' },
+  { name: 'Oro', hex: '#ffd700' }
 ])
 
 const categoryForm = ref<CreateCategoryRequest>({
@@ -892,29 +896,32 @@ const totalSalesCount = computed(() => sales.value.length)
 // Helper para convertir nombres de colores a hex
 const getColorHex = (colorName: string): string => {
   const colorMap: Record<string, string> = {
-    'space gray': '#5c5c60',
-    'silver': '#e3e4e6',
-    'gold': '#fad5a5',
-    'rose gold': '#e8c5a0',
-    'deep purple': '#5f5995',
-    'purple': '#5f5995',
-    'blue': '#1976d2',
+    'naranja cósmico': '#ff5e00',
+    'naranja cosmico': '#ff5e00',
+    'azul profundo': '#003d5c',
+    'plata': '#c0c0c0',
+    'silver': '#c0c0c0',
     'azul': '#1976d2',
-    'azul tecnologico': '#1e3a8a',
-    'green': '#4caf50',
-    'verde': '#4caf50',
-    'red': '#f44336',
-    'rojo': '#f44336',
-    'black': '#000000',
+    'blue': '#1976d2',
     'negro': '#000000',
-    'white': '#ffffff',
+    'black': '#000000',
     'blanco': '#ffffff',
-    'pink': '#e91e63',
-    'rosa': '#e91e63',
-    'yellow': '#ffeb3b',
+    'white': '#ffffff',
+    'azul neblina': '#a8c7dd',
+    'dorado claro': '#f7e7a1',
+    'azul cielo': '#87ceeb',
+    'rosa': '#ff69b4',
+    'pink': '#ff69b4',
     'amarillo': '#ffeb3b',
-    'orange': '#ff9800',
-    'naranja': '#ff9800'
+    'yellow': '#ffeb3b',
+    'verde': '#4caf50',
+    'green': '#4caf50',
+    'púrpura': '#9c27b0',
+    'purpura': '#9c27b0',
+    'purple': '#9c27b0',
+    'morado': '#9c27b0',
+    'oro': '#ffd700',
+    'gold': '#ffd700'
   }
 
   const normalized = colorName.toLowerCase().trim()
@@ -1254,18 +1261,31 @@ const removeShowcaseImage = () => {
   }
 }
 
-// Función para verificar si un color está seleccionado (comparación insensible a mayúsculas)
+// Función auxiliar para normalizar strings (quitar tildes, espacios extra, etc.)
+const normalizeString = (str: string): string => {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Quitar tildes y diacríticos
+    .trim()
+    .replace(/\s+/g, ' ') // Normalizar espacios múltiples a uno solo
+}
+
+// Función para verificar si un color está seleccionado (comparación normalizada)
 const isColorSelected = (colorName: string) => {
+  const normalizedColorName = normalizeString(colorName)
   return productForm.value.colors.some(
-    c => c.toLowerCase() === colorName.toLowerCase()
+    c => normalizeString(c) === normalizedColorName
   )
 }
 
 // Función para manejar la selección de colores
 const toggleProductColor = (colorName: string) => {
-  // Buscar el índice comparando en minúsculas para evitar problemas de capitalización
+  const normalizedColorName = normalizeString(colorName)
+
+  // Buscar el índice comparando strings normalizados
   const index = productForm.value.colors.findIndex(
-    c => c.toLowerCase() === colorName.toLowerCase()
+    c => normalizeString(c) === normalizedColorName
   )
 
   if (index > -1) {
@@ -1742,8 +1762,20 @@ const closeCategoryForm = () => {
 
 .color-option.selected {
   border-color: #60a5fa;
-  background: rgba(96, 165, 250, 0.2);
+  background: rgba(96, 165, 250, 0.25);
   transform: scale(1.05);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.3);
+}
+
+.color-option.selected .color-circle {
+  border-color: #60a5fa;
+  border-width: 3px;
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.color-option.selected .color-name {
+  color: #60a5fa;
+  font-weight: 700;
 }
 
 .color-circle {
@@ -1752,6 +1784,31 @@ const closeCategoryForm = () => {
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.check-icon {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.8), 0 1px 2px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  animation: checkPop 0.3s ease;
+}
+
+@keyframes checkPop {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .color-name {

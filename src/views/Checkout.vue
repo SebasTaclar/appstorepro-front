@@ -69,12 +69,12 @@
           <div class="form-section">
             <h2>Contacto</h2>
             <div class="form-group">
-              <label for="name">Nombre completo</label>
+              <label for="name">Nombre completo *</label>
               <input
                 id="name"
                 v-model="formData.name"
                 type="text"
-                placeholder="Juan Pérez"
+                placeholder="Escribe Tu Nombre"
                 :class="{ 'error': errors.name }"
                 @input="clearError('name')"
               >
@@ -82,7 +82,7 @@
             </div>
 
             <div class="form-group">
-              <label for="email">Correo electrónico</label>
+              <label for="email">Correo electrónico *</label>
               <input
                 id="email"
                 v-model="formData.email"
@@ -96,12 +96,12 @@
 
             <div class="form-row">
               <div class="form-group">
-                <label for="identificationNumber">Número de cédula</label>
+                <label for="identificationNumber">Número de cédula *</label>
                 <input
                   id="identificationNumber"
                   v-model="formData.identificationNumber"
                   type="text"
-                  placeholder="1234567890"
+                  placeholder="Ejm: 1234567890"
                   :class="{ 'error': errors.identificationNumber }"
                   @input="clearError('identificationNumber')"
                 >
@@ -109,12 +109,12 @@
               </div>
 
               <div class="form-group">
-                <label for="contactNumber">Teléfono</label>
+                <label for="contactNumber">Teléfono *</label>
                 <input
                   id="contactNumber"
                   v-model="formData.contactNumber"
                   type="tel"
-                  placeholder="+57 300 123 4567"
+                  placeholder="Ejm: 300 XXX XXXX"
                   :class="{ 'error': errors.contactNumber }"
                   @input="clearError('contactNumber')"
                 >
@@ -190,12 +190,12 @@
             <transition name="fade">
               <div v-if="deliveryMethod === 'delivery'" class="address-section">
                 <div class="form-group">
-                  <label for="address">Dirección</label>
+                  <label for="address">Dirección *</label>
                   <input
                     id="address"
                     v-model="formData.address"
                     type="text"
-                    placeholder="Calle 123 #45-67"
+                    placeholder="Ejm: Calle 123 # XX-XX"
                     :class="{ 'error': errors.address }"
                     @input="clearError('address')"
                   >
@@ -204,12 +204,12 @@
 
                 <div class="form-row">
                   <div class="form-group">
-                    <label for="city">Ciudad</label>
+                    <label for="city">Ciudad *</label>
                     <input
                       id="city"
                       v-model="formData.city"
                       type="text"
-                      placeholder="Bogotá"
+                      placeholder="Escribe la ciudad de Destino"
                       :class="{ 'error': errors.city }"
                       @input="clearError('city')"
                     >
@@ -217,12 +217,12 @@
                   </div>
 
                   <div class="form-group">
-                    <label for="phone">Teléfono</label>
+                    <label for="phone">Teléfono *</label>
                     <input
                       id="phone"
                       v-model="formData.phone"
                       type="tel"
-                      placeholder="300 123 4567"
+                      placeholder="Ejm: 300 XXX XXXX"
                       :class="{ 'error': errors.phone }"
                       @input="clearError('phone')"
                     >
@@ -242,7 +242,7 @@
 
                   <h4>⏰ Horarios de Atención</h4>
                   <p>Lunes - Sábado: 9:30 AM - 7:00 PM</p>
-                  <p>Domingos: Cerrado</p>
+                  <p>Domingos: Cada 15 Días</p>
                 </div>
               </div>
             </transition>
@@ -536,7 +536,7 @@ const goToHome = () => {
 <style scoped>
 .checkout-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: #0a0a0a;
   padding: 5rem 1rem;
 }
 
@@ -550,8 +550,8 @@ const goToHome = () => {
 }
 
 .back-button {
-  background: white;
-  border: 1px solid #e0e0e0;
+  background: #1a1a1a;
+  border: 1px solid #333;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   cursor: pointer;
@@ -561,16 +561,18 @@ const goToHome = () => {
   gap: 0.5rem;
   margin-bottom: 1rem;
   transition: all 0.3s ease;
+  color: #f5f5f7;
 }
 
 .back-button:hover {
-  background: #f5f5f5;
+  background: #222;
   transform: translateX(-4px);
+  border-color: #444;
 }
 
 .checkout-title {
   font-size: 2rem;
-  color: #333;
+  color: #ffffff;
   margin: 0;
 }
 
@@ -582,19 +584,20 @@ const goToHome = () => {
 
 /* Resumen del pedido */
 .order-summary {
-  background: white;
+  background: #1a1a1a;
   border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   height: fit-content;
   position: sticky;
   top: 2rem;
+  border: 1px solid #2a2a2a;
 }
 
 .order-summary h2 {
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
-  color: #333;
+  color: #ffffff;
 }
 
 .cart-items {
@@ -607,7 +610,7 @@ const goToHome = () => {
   display: flex;
   gap: 1rem;
   padding: 1rem;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #2a2a2a;
 }
 
 .cart-item:last-child {
@@ -624,18 +627,18 @@ const goToHome = () => {
 .item-details h3 {
   font-size: 1rem;
   margin: 0 0 0.5rem 0;
-  color: #333;
+  color: #f5f5f7;
 }
 
 .item-quantity {
   font-size: 0.875rem;
-  color: #666;
+  color: #a1a1a6;
   margin: 0.25rem 0;
 }
 
 .item-color {
   font-size: 0.875rem;
-  color: #667eea;
+  color: #0a84ff;
   margin: 0.25rem 0;
   font-weight: 500;
 }
@@ -650,11 +653,11 @@ const goToHome = () => {
 .empty-cart {
   text-align: center;
   padding: 3rem 1rem;
-  color: #999;
+  color: #6e6e73;
 }
 
 .order-total {
-  border-top: 2px solid #f0f0f0;
+  border-top: 2px solid #2a2a2a;
   padding-top: 1rem;
 }
 
@@ -663,15 +666,16 @@ const goToHome = () => {
   justify-content: space-between;
   padding: 0.75rem 0;
   font-size: 1rem;
+  color: #a1a1a6;
 }
 
 .total-final {
-  border-top: 2px solid #f0f0f0;
+  border-top: 2px solid #2a2a2a;
   margin-top: 0.5rem;
   padding-top: 1rem;
   font-size: 1.25rem;
   font-weight: 700;
-  color: #333;
+  color: #ffffff;
 }
 
 .continue-shopping {
@@ -681,8 +685,8 @@ const goToHome = () => {
 
 .btn-continue {
   background: transparent;
-  color: #667eea;
-  border: 2px solid #667eea;
+  color: #0a84ff;
+  border: 2px solid #0a84ff;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   font-size: 1rem;
@@ -693,18 +697,19 @@ const goToHome = () => {
 }
 
 .btn-continue:hover {
-  background: #667eea;
+  background: #0a84ff;
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
 }
 
 /* Formulario */
 .checkout-form {
-  background: white;
+  background: #1a1a1a;
   border-radius: 16px;
   padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  border: 1px solid #2a2a2a;
 }
 
 .form-section {
@@ -714,7 +719,7 @@ const goToHome = () => {
 .form-section h2 {
   font-size: 1.5rem;
   margin-bottom: 1.5rem;
-  color: #333;
+  color: #ffffff;
 }
 
 .form-group {
@@ -725,7 +730,7 @@ const goToHome = () => {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  color: #333;
+  color: #f5f5f7;
 }
 
 .form-group input[type="text"],
@@ -733,10 +738,12 @@ const goToHome = () => {
 .form-group input[type="tel"] {
   width: 100%;
   padding: 0.875rem 1rem;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #333;
   border-radius: 8px;
   font-size: 1rem;
   transition: all 0.3s ease;
+  background: #0a0a0a;
+  color: #f5f5f7;
 }
 
 .form-group input:focus {
@@ -768,6 +775,7 @@ const goToHome = () => {
   gap: 0.5rem;
   cursor: pointer;
   font-weight: normal;
+  color: #f5f5f7;
 }
 
 .checkbox-label input[type="checkbox"] {
@@ -806,7 +814,7 @@ const goToHome = () => {
 
 .privacy-text {
   font-size: 0.875rem;
-  color: #666;
+  color: #a1a1a6;
   margin-top: 1rem;
 }
 
@@ -834,22 +842,23 @@ const goToHome = () => {
 }
 
 .delivery-option {
-  border: 2px solid #e0e0e0;
+  border: 2px solid #333;
   border-radius: 12px;
   padding: 1.25rem;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
+  background: #0a0a0a;
 }
 
 .delivery-option:hover {
   border-color: #10b981;
-  background: #f0fdf4;
+  background: rgba(16, 185, 129, 0.1);
 }
 
 .delivery-option.selected {
   border-color: #10b981;
-  background: #f0fdf4;
+  background: rgba(16, 185, 129, 0.1);
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
@@ -877,7 +886,7 @@ const goToHome = () => {
 .option-title {
   font-size: 1.125rem;
   font-weight: 500;
-  color: #333;
+  color: #f5f5f7;
 }
 
 .option-price {
@@ -892,7 +901,7 @@ const goToHome = () => {
 }
 
 .info-card {
-  background: #f0fdf4;
+  background: rgba(16, 185, 129, 0.1);
   border: 1px solid #10b981;
   border-radius: 12px;
   padding: 1.5rem;
@@ -901,19 +910,19 @@ const goToHome = () => {
 .info-card h3 {
   font-size: 1.125rem;
   margin-bottom: 1rem;
-  color: #333;
+  color: #ffffff;
 }
 
 .info-card h4 {
   font-size: 1rem;
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
-  color: #333;
+  color: #f5f5f7;
 }
 
 .info-card p {
   margin: 0.5rem 0;
-  color: #666;
+  color: #a1a1a6;
   line-height: 1.6;
 }
 
@@ -923,19 +932,19 @@ const goToHome = () => {
 }
 
 .location-address {
-  color: #555 !important;
+  color: #a1a1a6 !important;
   font-size: 0.95rem;
   margin-bottom: 1rem !important;
 }
 
 /* Alerta de error */
 .error-alert {
-  background: #fee2e2;
+  background: rgba(239, 68, 68, 0.1);
   border: 1px solid #ef4444;
   border-radius: 12px;
   padding: 1rem;
   margin-top: 1.5rem;
-  color: #dc2626;
+  color: #ef4444;
   font-weight: 500;
   text-align: center;
 }
