@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 export interface CartItem {
   id: string
@@ -21,9 +21,34 @@ export interface Product {
   originalPrice?: number
 }
 
-// Estado global del carrito
-const cartItems = ref<CartItem[]>([])
+// Función para cargar el carrito desde localStorage
+const loadCartFromStorage = (): CartItem[] => {
+  try {
+    const storedCart = localStorage.getItem('appstorepro_cart')
+    return storedCart ? JSON.parse(storedCart) : []
+  } catch (error) {
+    console.error('Error al cargar el carrito desde localStorage:', error)
+    return []
+  }
+}
+
+// Función para guardar el carrito en localStorage
+const saveCartToStorage = (items: CartItem[]) => {
+  try {
+    localStorage.setItem('appstorepro_cart', JSON.stringify(items))
+  } catch (error) {
+    console.error('Error al guardar el carrito en localStorage:', error)
+  }
+}
+
+// Estado global del carrito (inicializado desde localStorage)
+const cartItems = ref<CartItem[]>(loadCartFromStorage())
 const isCartOpen = ref(false)
+
+// Observar cambios en el carrito y guardar automáticamente
+watch(cartItems, (newCartItems) => {
+  saveCartToStorage(newCartItems)
+}, { deep: true })
 
 export function useCart() {
   // Computed para el total de items

@@ -4,7 +4,8 @@
       <h2 class="showcase-title">Novedades Apple Store Pro</h2>
       <p class="showcase-subtitle">Lanzamientos recientes y actualizaciones clave del ecosistema Apple.</p>
 
-      <div class="products-grid">
+      <!-- Vista Desktop: Grid normal -->
+      <div class="products-grid desktop-only">
         <div
           v-for="product in products"
           :key="product.id"
@@ -17,6 +18,81 @@
             </div>
             <div class="product-name-circular">
               <h3>{{ product.name }}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vista Móvil: Carruseles por categoría -->
+      <div class="mobile-carousels mobile-only">
+        <!-- Carrusel iPhone -->
+        <div v-if="iphoneProducts.length > 0" class="carousel-section">
+          <h3 class="carousel-category-title">iPhone</h3>
+          <div class="carousel-wrapper">
+            <div class="carousel-track">
+              <div
+                v-for="product in iphoneProducts"
+                :key="product.id"
+                class="product-card-circular"
+                @click="showProductDetail(product)"
+              >
+                <div class="circular-container">
+                  <div class="product-image-circular">
+                    <img :src="product.image" :alt="product.name" loading="lazy" />
+                  </div>
+                  <div class="product-name-circular">
+                    <h3>{{ product.name }}</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carrusel Mac & iPad -->
+        <div v-if="macIpadProducts.length > 0" class="carousel-section">
+          <h3 class="carousel-category-title">Mac & iPad</h3>
+          <div class="carousel-wrapper">
+            <div class="carousel-track">
+              <div
+                v-for="product in macIpadProducts"
+                :key="product.id"
+                class="product-card-circular"
+                @click="showProductDetail(product)"
+              >
+                <div class="circular-container">
+                  <div class="product-image-circular">
+                    <img :src="product.image" :alt="product.name" loading="lazy" />
+                  </div>
+                  <div class="product-name-circular">
+                    <h3>{{ product.name }}</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carrusel Watch & Accesorios -->
+        <div v-if="watchAccessoriesProducts.length > 0" class="carousel-section">
+          <h3 class="carousel-category-title">Watch & Accesorios</h3>
+          <div class="carousel-wrapper">
+            <div class="carousel-track">
+              <div
+                v-for="product in watchAccessoriesProducts"
+                :key="product.id"
+                class="product-card-circular"
+                @click="showProductDetail(product)"
+              >
+                <div class="circular-container">
+                  <div class="product-image-circular">
+                    <img :src="product.image" :alt="product.name" loading="lazy" />
+                  </div>
+                  <div class="product-name-circular">
+                    <h3>{{ product.name }}</h3>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -87,6 +163,28 @@ const products = computed(() =>
   }))
 )
 
+// Filtrar productos por categoría (para móvil)
+const iphoneProducts = computed(() =>
+  products.value.filter(p =>
+    p.category.toLowerCase().includes('iphone')
+  )
+)
+
+const macIpadProducts = computed(() =>
+  products.value.filter(p => {
+    const cat = p.category.toLowerCase()
+    return cat.includes('mac') || cat.includes('ipad')
+  })
+)
+
+const watchAccessoriesProducts = computed(() =>
+  products.value.filter(p => {
+    const cat = p.category.toLowerCase()
+    return cat.includes('watch') || cat.includes('reloj') ||
+           cat.includes('accesorio') || cat.includes('accessory')
+  })
+)
+
 // Funciones para el modal
 const showProductDetail = (product: {
   id: number
@@ -130,6 +228,16 @@ const showProductDetail = (product: {
   line-height: 1.2;
 }
 
+/* Mostrar/Ocultar según dispositivo */
+.desktop-only {
+  display: flex;
+}
+
+.mobile-only {
+  display: none;
+}
+
+/* Grid para Desktop */
 .products-grid {
   display: flex;
   flex-wrap: wrap;
@@ -139,6 +247,46 @@ const showProductDetail = (product: {
   margin-left: auto;
   margin-right: auto;
   justify-content: center;
+}
+
+/* Carruseles para Móvil */
+.mobile-carousels {
+  width: 100%;
+}
+
+.carousel-section {
+  margin-bottom: 2.5rem;
+}
+
+.carousel-category-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #3b82f6;
+  text-align: center;
+  margin-bottom: 1rem;
+  letter-spacing: 0.5px;
+}
+
+.carousel-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch; /* Scroll suave en iOS */
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  padding: 0.5rem 0;
+}
+
+.carousel-wrapper::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.carousel-track {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0 1rem;
+  width: max-content;
 }
 
 /* Estilos para tarjetas circulares */
@@ -356,9 +504,13 @@ const showProductDetail = (product: {
 }
 
 @media (max-width: 768px) {
-  .products-grid {
-    max-width: 400px;
-    gap: 1.5rem;
+  /* Cambiar a vista móvil con carruseles */
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: block !important;
   }
 
   .product-image-circular {
@@ -372,6 +524,14 @@ const showProductDetail = (product: {
 
   .showcase-title {
     font-size: 1.4rem;
+  }
+
+  .carousel-category-title {
+    font-size: 1.1rem;
+  }
+
+  .carousel-section {
+    margin-bottom: 2rem;
   }
 
   .modal-content {
@@ -393,15 +553,9 @@ const showProductDetail = (product: {
 }
 
 @media (max-width: 480px) {
-  .products-grid {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 400px;
-    gap: 1.2rem;
-  }
-
   .product-image-circular {
-    width: 120px;
-    height: 120px;
+    width: 130px;
+    height: 130px;
   }
 
   .product-name-circular h3 {
@@ -414,6 +568,15 @@ const showProductDetail = (product: {
 
   .showcase-subtitle {
     font-size: 0.75rem;
+  }
+
+  .carousel-category-title {
+    font-size: 1rem;
+  }
+
+  .carousel-track {
+    gap: 1.2rem;
+    padding: 0 0.75rem;
   }
 }
 </style>

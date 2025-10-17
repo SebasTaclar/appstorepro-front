@@ -413,39 +413,33 @@ const filteredProducts = computed(() => {
 
 // Colores de Apple predeterminados (incluye variantes en inglés y español)
 const appleColors: Record<string, string> = {
-  // Inglés
-  'space gray': '#5c5c60',
-  'silver': '#e3e4e6',
-  'gold': '#fad5a5',
-  'rose gold': '#e8c5a0',
-  'deep purple': '#5f5995',
-  'blue': '#1976d2',
-  'green': '#4caf50',
-  'pink': '#ff69b4',
-  'yellow': '#ffeb3b',
-  'red': '#f44336',
-  'black': '#1a1a1a',
-  'white': '#ffffff',
-  // Español comunes
-  'gris espacial': '#5c5c60',
-  'plata': '#e3e4e6',
-  'dorado': '#fad5a5',
-  'oro rosa': '#e8c5a0',
-  'púrpura': '#5f5995',
-  'morado': '#5f5995',
+  // Nueva paleta actualizada
+  'naranja cósmico': '#ff5e00',
+  'naranja cosmico': '#ff5e00',
+  'azul profundo': '#003d5c',
+  'plata': '#c0c0c0',
+  'silver': '#c0c0c0',
   'azul': '#1976d2',
-  'verde': '#4caf50',
-  'rosa': '#ff69b4',
-  'amarillo': '#ffeb3b',
-  'rojo': '#f44336',
-  'negro': '#1a1a1a',
+  'blue': '#1976d2',
+  'negro': '#000000',
+  'black': '#000000',
   'blanco': '#ffffff',
-  'blanco estrella': '#f2f3f5',
-  // Titanio (iPhone 15 Pro)
-  'titanio natural': '#d3c4b4',
-  'titanio azul': '#506278',
-  'titanio blanco': '#e4e6e8',
-  'titanio negro': '#2d2f31'
+  'white': '#ffffff',
+  'azul neblina': '#a8c7dd',
+  'dorado claro': '#f7e7a1',
+  'azul cielo': '#87ceeb',
+  'rosa': '#ff69b4',
+  'pink': '#ff69b4',
+  'amarillo': '#ffeb3b',
+  'yellow': '#ffeb3b',
+  'verde': '#4caf50',
+  'green': '#4caf50',
+  'púrpura': '#9c27b0',
+  'purpura': '#9c27b0',
+  'purple': '#9c27b0',
+  'morado': '#9c27b0',
+  'oro': '#ffd700',
+  'gold': '#ffd700'
 }
 
 // Normaliza nombres y obtiene color; fallback a gris claro

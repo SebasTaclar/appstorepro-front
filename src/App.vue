@@ -13,8 +13,13 @@
 
       <!-- Navegación principal -->
       <div class="nav-menu desktop-nav">
-        <a href="#products" class="nav-link" @click="closeMobileMenu(); scrollToProductStore()">Compra Ahora</a>
-        <a href="#contact" class="nav-link" @click="closeMobileMenu(); scrollToContact()">Contáctanos</a>
+        <RouterLink to="/iphone" class="nav-link" @click="closeMobileMenu">iPhone</RouterLink>
+        <RouterLink to="/mac" class="nav-link" @click="closeMobileMenu">Mac</RouterLink>
+        <RouterLink to="/ipad" class="nav-link" @click="closeMobileMenu">iPad</RouterLink>
+        <RouterLink to="/watch" class="nav-link" @click="closeMobileMenu">Watch</RouterLink>
+        <RouterLink to="/accesorios" class="nav-link" @click="closeMobileMenu">Accesorios</RouterLink>
+        <!-- <a href="#products" class="nav-link" @click="closeMobileMenu(); scrollToProductStore()">Compra Ahora</a>
+        <a href="#contact" class="nav-link" @click="closeMobileMenu(); scrollToContact()">Contáctanos</a> -->
       </div>
 
       <!-- Controles de usuario -->
@@ -38,8 +43,13 @@
       <div class="mobile-menu" :class="{ 'active': isMobileMenuOpen }">
         <div class="mobile-menu-content">
           <div class="mobile-nav-links">
-            <a href="#products" class="mobile-link" @click="closeMobileMenu(); scrollToProductStore()">Compra Ahora</a>
-            <a href="#contact" class="mobile-link" @click="closeMobileMenu(); scrollToContact()">Contáctanos</a>
+            <RouterLink to="/iphone" class="mobile-link" @click="closeMobileMenu">iPhone</RouterLink>
+            <RouterLink to="/mac" class="mobile-link" @click="closeMobileMenu">Mac</RouterLink>
+            <RouterLink to="/ipad" class="mobile-link" @click="closeMobileMenu">iPad</RouterLink>
+            <RouterLink to="/watch" class="mobile-link" @click="closeMobileMenu">Watch</RouterLink>
+            <RouterLink to="/accesorios" class="mobile-link" @click="closeMobileMenu">Accesorios</RouterLink>
+            <!-- <a href="#products" class="mobile-link" @click="closeMobileMenu(); scrollToProductStore()">Compra Ahora</a>
+            <a href="#contact" class="mobile-link" @click="closeMobileMenu(); scrollToContact()">Contáctanos</a> -->
           </div>
 
           <div class="mobile-controls">
@@ -52,12 +62,9 @@
             <RouterLink v-if="isLoggedIn && isAdmin" class="mobile-btn admin-btn" to="/admin/products" @click="closeMobileMenu">
               ⚙️ Panel Admin
             </RouterLink>
-            <RouterLink v-if="isLoggedIn" class="mobile-btn purchases-btn" to="/compras" @click="closeMobileMenu">
-              🧾 Compras
-            </RouterLink>
-            <RouterLink v-if="isLoggedIn" @click="logout; closeMobileMenu()" class="mobile-btn logout-btn" to="/">
+            <button v-if="isLoggedIn" @click="handleMobileLogout" class="mobile-btn logout-btn">
               Cerrar sesión
-            </RouterLink>
+            </button>
           </div>
         </div>
       </div>
@@ -94,7 +101,7 @@ const closeMobileMenu = () => {
 };
 
 // Función para hacer scroll a la sección de productos
-const scrollToProductStore = () => {
+/* const scrollToProductStore = () => {
   const productStoreSection = document.querySelector('.product-store');
   if (productStoreSection) {
     productStoreSection.scrollIntoView({
@@ -102,10 +109,10 @@ const scrollToProductStore = () => {
       block: 'start'
     });
   }
-};
+}; */
 
 // Función para hacer scroll a la sección de contacto
-const scrollToContact = () => {
+/* const scrollToContact = () => {
   const contactSection = document.querySelector('.contact-section');
   if (contactSection) {
     contactSection.scrollIntoView({
@@ -113,7 +120,7 @@ const scrollToContact = () => {
       block: 'start'
     });
   }
-};
+}; */
 
 const checkAuthStatus = () => {
   isLoggedIn.value = authService.isAuthenticated();
@@ -129,7 +136,13 @@ const logout = () => {
   authService.logout();
   isLoggedIn.value = false;
   username.value = '';
-  router.push('/');
+  // Usar replace para no dejar historial que permita volver a la página autenticada
+  router.replace({ name: 'home' });
+};
+
+const handleMobileLogout = () => {
+  closeMobileMenu();
+  logout();
 };
 
 onMounted(() => {
@@ -448,6 +461,10 @@ watch(route, () => {
   font-size: 16px;
   text-align: center;
   transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  font-family: inherit;
 }
 
 .mobile-btn.access-btn {

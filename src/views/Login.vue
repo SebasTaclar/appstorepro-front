@@ -265,6 +265,7 @@ const clearCustomValidityMessage = (event: Event) => {
 @media (max-width: 768px) {
   .login-main {
     padding: 1rem;
+    padding-top: 5rem;
   }
 
   .login-container {
