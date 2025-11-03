@@ -153,36 +153,90 @@ const selectedProduct = ref<{
 } | null>(null)
 
 // Mapear los productos del composable al formato que usa el template
-const products = computed(() =>
-  showcaseProducts.value.map(product => ({
+const products = computed(() => {
+  const mapped = showcaseProducts.value.map(product => ({
     id: parseInt(product.id),
     name: product.name,
     description: product.description,
     image: product.image,
+    price: product.price,
     category: getCategoryById(product.category)?.name || 'Sin categoría'
   }))
-)
+
+  // Helper: extraer número de modelo desde el nombre (ej. "iPhone 17 Pro Max" -> 17)
+  const extractModelNumber = (name: string): number | null => {
+    if (!name) return null
+    const m = name.match(/\d+/)
+    return m ? parseInt(m[0], 10) : null
+  }
+
+  // Separar iPhones y el resto; iPhones primero ordenados por número de modelo descendente
+  const iphones = mapped
+    .filter(p => p.category.toLowerCase().includes('iphone'))
+    .slice()
+    .sort((a, b) => {
+      const na = extractModelNumber(a.name)
+      const nb = extractModelNumber(b.name)
+      if (na !== null && nb !== null) return nb - na // mayor -> menor
+      if (na !== null) return -1 // a tiene número, poner antes
+      if (nb !== null) return 1  // b tiene número, poner antes
+      // fallback: por precio descendente, luego por nombre
+      const priceDiff = (b.price ?? 0) - (a.price ?? 0)
+      if (priceDiff !== 0) return priceDiff
+      return a.name.localeCompare(b.name, 'es', { sensitivity: 'base' })
+    })
+
+  // El resto de productos se ordenan alfabéticamente (A -> Z)
+  const others = mapped
+    .filter(p => !p.category.toLowerCase().includes('iphone'))
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }))
+
+  return [...iphones, ...others]
+})
 
 // Filtrar productos por categoría (para móvil)
 const iphoneProducts = computed(() =>
-  products.value.filter(p =>
-    p.category.toLowerCase().includes('iphone')
-  )
+  // Filtrar y ordenar por número de modelo (mayor -> menor), fallback a precio
+  products.value
+    .filter(p => p.category.toLowerCase().includes('iphone'))
+    .slice()
+    .sort((a, b) => {
+      const extractModelNumber = (name: string): number | null => {
+        if (!name) return null
+        const m = name.match(/\d+/)
+        return m ? parseInt(m[0], 10) : null
+      }
+      const na = extractModelNumber(a.name)
+      const nb = extractModelNumber(b.name)
+      if (na !== null && nb !== null) return nb - na
+      if (na !== null) return -1
+      if (nb !== null) return 1
+      return (b.price ?? 0) - (a.price ?? 0)
+    })
 )
 
 const macIpadProducts = computed(() =>
-  products.value.filter(p => {
-    const cat = p.category.toLowerCase()
-    return cat.includes('mac') || cat.includes('ipad')
-  })
+  // Filtrar y ordenar por precio de mayor a menor para Mac & iPad
+  products.value
+    .filter(p => {
+      const cat = p.category.toLowerCase()
+      return cat.includes('mac') || cat.includes('ipad')
+    })
+    .slice()
+    .sort((a, b) => (b.price ?? 0) - (a.price ?? 0))
 )
 
 const watchAccessoriesProducts = computed(() =>
-  products.value.filter(p => {
-    const cat = p.category.toLowerCase()
-    return cat.includes('watch') || cat.includes('reloj') ||
-           cat.includes('accesorio') || cat.includes('accessory')
-  })
+  // Filtrar y ordenar por precio de mayor a menor para Watch & Accesorios
+  products.value
+    .filter(p => {
+      const cat = p.category.toLowerCase()
+      return cat.includes('watch') || cat.includes('reloj') ||
+             cat.includes('accesorio') || cat.includes('accessory')
+    })
+    .slice()
+    .sort((a, b) => (b.price ?? 0) - (a.price ?? 0))
 )
 
 // Funciones para el modal
