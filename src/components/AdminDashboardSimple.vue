@@ -68,9 +68,26 @@
           </button>
         </div>
 
+        <!-- Barra de búsqueda para productos -->
+        <div class="search-bar">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path fill="currentColor" d="M10 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm8.707 17.293-4.387-4.387a9 9 0 1 0-1.414 1.414l4.387 4.387a1 1 0 0 0 1.414-1.414z"/>
+            </svg>
+            <input
+              type="search"
+              v-model="searchProducts"
+              placeholder="Buscar productos por nombre..."
+              aria-label="Buscar productos"
+              class="search-input"
+            />
+            <button v-if="searchProducts" class="search-clear" @click.prevent="searchProducts = ''" aria-label="Limpiar búsqueda">X</button>
+          </div>
+        </div>
+
         <!-- Lista de productos -->
         <div class="products-grid">
-          <div v-for="product in products" :key="product.id" class="product-card">
+          <div v-for="product in filteredProducts" :key="product.id" class="product-card">
             <div class="product-image">
               <img v-if="product.images && product.images.length > 0" :src="product.images[0]" :alt="product.name" />
               <div v-else class="no-image">📷</div>
@@ -90,13 +107,21 @@
           </div>
         </div>
 
-        <!-- Estado vacío -->
-        <div v-if="products.length === 0" class="empty-state">
+        <!-- Estado vacío o sin resultados -->
+        <div v-if="filteredProducts.length === 0 && !searchProducts" class="empty-state">
           <div class="empty-icon">📦</div>
           <h3>No hay productos</h3>
           <p>Comienza agregando tu primer producto</p>
           <button class="btn btn-primary" @click="showProductForm = true">
             Crear Primer Producto
+          </button>
+        </div>
+        <div v-else-if="filteredProducts.length === 0 && searchProducts" class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <h3>No se encontraron resultados</h3>
+          <p>No hay productos que coincidan con "{{ searchProducts }}"</p>
+          <button class="btn btn-secondary" @click="searchProducts = ''">
+            Limpiar búsqueda
           </button>
         </div>
       </div>
@@ -111,9 +136,26 @@
           </button>
         </div>
 
+        <!-- Barra de búsqueda para categorías -->
+        <div class="search-bar">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path fill="currentColor" d="M10 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm8.707 17.293-4.387-4.387a9 9 0 1 0-1.414 1.414l4.387 4.387a1 1 0 0 0 1.414-1.414z"/>
+            </svg>
+            <input
+              type="search"
+              v-model="searchCategories"
+              placeholder="Buscar categorías por nombre..."
+              aria-label="Buscar categorías"
+              class="search-input"
+            />
+            <button v-if="searchCategories" class="search-clear" @click.prevent="searchCategories = ''" aria-label="Limpiar búsqueda">X</button>
+          </div>
+        </div>
+
         <!-- Lista de categorías -->
         <div class="categories-list">
-          <div v-for="category in categories" :key="category.id" class="category-item">
+          <div v-for="category in filteredCategories" :key="category.id" class="category-item">
             <div class="category-info">
               <h3>{{ category.name }}</h3>
               <p>{{ category.description }}</p>
@@ -126,13 +168,21 @@
           </div>
         </div>
 
-        <!-- Estado vacío -->
-        <div v-if="categories.length === 0" class="empty-state">
+        <!-- Estado vacío o sin resultados -->
+        <div v-if="filteredCategories.length === 0 && !searchCategories" class="empty-state">
           <div class="empty-icon">🏷️</div>
           <h3>No hay categorías</h3>
           <p>Crea categorías para organizar tus productos</p>
           <button class="btn btn-primary" @click="showCategoryForm = true">
             Crear Primera Categoría
+          </button>
+        </div>
+        <div v-else-if="filteredCategories.length === 0 && searchCategories" class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <h3>No se encontraron resultados</h3>
+          <p>No hay categorías que coincidan con "{{ searchCategories }}"</p>
+          <button class="btn btn-secondary" @click="searchCategories = ''">
+            Limpiar búsqueda
           </button>
         </div>
       </div>
@@ -147,9 +197,26 @@
           </button>
         </div>
 
+        <!-- Barra de búsqueda para novedades -->
+        <div class="search-bar">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path fill="currentColor" d="M10 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm8.707 17.293-4.387-4.387a9 9 0 1 0-1.414 1.414l4.387 4.387a1 1 0 0 0 1.414-1.414z"/>
+            </svg>
+            <input
+              type="search"
+              v-model="searchShowcase"
+              placeholder="Buscar novedades por nombre..."
+              aria-label="Buscar novedades"
+              class="search-input"
+            />
+            <button v-if="searchShowcase" class="search-clear" @click.prevent="searchShowcase = ''" aria-label="Limpiar búsqueda">X</button>
+          </div>
+        </div>
+
         <!-- Lista de productos showcase -->
         <div class="showcase-grid">
-          <div v-for="product in showcaseProducts" :key="product.id" class="showcase-card">
+          <div v-for="product in filteredShowcase" :key="product.id" class="showcase-card">
             <div class="showcase-image">
               <img :src="product.image" :alt="product.name" />
             </div>
@@ -170,13 +237,21 @@
           </div>
         </div>
 
-        <!-- Estado vacío -->
-        <div v-if="showcaseProducts.length === 0" class="empty-state">
+        <!-- Estado vacío o sin resultados -->
+        <div v-if="filteredShowcase.length === 0 && !searchShowcase" class="empty-state">
           <div class="empty-icon">✨</div>
           <h3>No hay novedades</h3>
           <p>Agrega productos destacados para mostrar en la sección de novedades</p>
           <button class="btn btn-primary" @click="showShowcaseForm = true">
             Crear Primera Novedad
+          </button>
+        </div>
+        <div v-else-if="filteredShowcase.length === 0 && searchShowcase" class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <h3>No se encontraron resultados</h3>
+          <p>No hay novedades que coincidan con "{{ searchShowcase }}"</p>
+          <button class="btn btn-secondary" @click="searchShowcase = ''">
+            Limpiar búsqueda
           </button>
         </div>
       </div>
@@ -188,6 +263,23 @@
           <button @click="loadPurchases" class="btn-secondary" :disabled="isLoadingSales">
             {{ isLoadingSales ? 'Cargando...' : 'Actualizar' }}
           </button>
+        </div>
+
+        <!-- Barra de búsqueda para compras -->
+        <div v-if="!isLoadingSales && !salesError && sales.length > 0" class="search-bar">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+              <path fill="currentColor" d="M10 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm8.707 17.293-4.387-4.387a9 9 0 1 0-1.414 1.414l4.387 4.387a1 1 0 0 0 1.414-1.414z"/>
+            </svg>
+            <input
+              type="search"
+              v-model="searchSales"
+              placeholder="Buscar por cliente o producto..."
+              aria-label="Buscar compras"
+              class="search-input"
+            />
+            <button v-if="searchSales" class="search-clear" @click.prevent="searchSales = ''" aria-label="Limpiar búsqueda">X</button>
+          </div>
         </div>
 
         <!-- Estado de carga -->
@@ -244,7 +336,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="sale in sales" :key="sale.id" class="sale-row">
+                <tr v-for="sale in filteredSales" :key="sale.id" class="sale-row">
                   <td>
                     <div class="customer-info">
                       <div class="customer-name">{{ sale.customerName }}</div>
@@ -686,6 +778,12 @@ const imageUploadMethod = ref('url')
 const showcaseImagePreview = ref('')
 const showcaseFileInput = ref<HTMLInputElement | null>(null)
 
+// Variables para búsqueda
+const searchProducts = ref('')
+const searchCategories = ref('')
+const searchShowcase = ref('')
+const searchSales = ref('')
+
 // Usar el composable de productos
 const {
   regularProducts, // Productos regulares (sin showcase) - para mostrar en sección Productos
@@ -892,6 +990,56 @@ const pendingSales = computed(() =>
 )
 
 const totalSalesCount = computed(() => sales.value.length)
+
+// Computed properties para búsqueda y filtrado
+const filteredProducts = computed(() => {
+  if (!searchProducts.value.trim()) {
+    return products.value
+  }
+  const searchLower = searchProducts.value.toLowerCase().trim()
+  return products.value.filter(product =>
+    product.name.toLowerCase().includes(searchLower) ||
+    product.description?.toLowerCase().includes(searchLower)
+  )
+})
+
+const filteredCategories = computed(() => {
+  if (!searchCategories.value.trim()) {
+    return categories.value
+  }
+  const searchLower = searchCategories.value.toLowerCase().trim()
+  return categories.value.filter(category =>
+    category.name.toLowerCase().includes(searchLower) ||
+    category.description?.toLowerCase().includes(searchLower)
+  )
+})
+
+const filteredShowcase = computed(() => {
+  if (!searchShowcase.value.trim()) {
+    return showcaseProducts.value
+  }
+  const searchLower = searchShowcase.value.toLowerCase().trim()
+  return showcaseProducts.value.filter(product =>
+    product.name.toLowerCase().includes(searchLower) ||
+    product.description?.toLowerCase().includes(searchLower)
+  )
+})
+
+const filteredSales = computed(() => {
+  if (!searchSales.value.trim()) {
+    return sales.value
+  }
+  const searchLower = searchSales.value.toLowerCase().trim()
+  return sales.value.filter(sale =>
+    sale.customerName.toLowerCase().includes(searchLower) ||
+    sale.customerEmail.toLowerCase().includes(searchLower) ||
+    sale.productName.toLowerCase().includes(searchLower) ||
+    // Buscar también en los items individuales
+    (sale.items && sale.items.some(item =>
+      item.productName.toLowerCase().includes(searchLower)
+    ))
+  )
+})
 
 // Helper para convertir nombres de colores a hex
 const getColorHex = (colorName: string): string => {
@@ -1510,6 +1658,83 @@ const closeCategoryForm = () => {
   font-weight: 700;
   color: var(--brand-primary-contrast);
   margin: 0;
+}
+
+/* Barras de búsqueda en Admin */
+.search-bar {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 2rem;
+  position: relative;
+}
+
+.search-input-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--brand-accent-alt);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.875rem 3.5rem 0.875rem 2.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--brand-border);
+  background: var(--brand-bg-end);
+  font-size: 1rem;
+  color: var(--brand-primary-contrast);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.search-input:focus {
+  background: var(--brand-surface);
+  border-color: var(--brand-success);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.search-input:hover {
+  border-color: var(--brand-accent);
+}
+
+.search-input::placeholder {
+  color: var(--brand-accent-alt);
+  opacity: 0.7;
+}
+
+.search-clear {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(16, 185, 129, 0.1);
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--brand-success);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.search-clear:hover {
+  background: rgba(16, 185, 129, 0.2);
+  transform: translateY(-50%) scale(1.05);
 }
 
 .products-grid {

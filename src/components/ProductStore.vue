@@ -11,6 +11,25 @@
         </p>
       </div>
 
+      <!-- Barra de búsqueda mejorada -->
+      <div class="search-bar">
+        <div class="search-input-wrapper">
+          <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path fill="currentColor" d="M10 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16zm8.707 17.293-4.387-4.387a9 9 0 1 0-1.414 1.414l4.387 4.387a1 1 0 0 0 1.414-1.414z"/>
+          </svg>
+
+          <input
+            type="search"
+            v-model="searchTerm"
+            placeholder="Buscar por Nombre del Producto..."
+            aria-label="Buscar productos por título"
+            class="search-input"
+          />
+
+          <button v-if="searchTerm" class="search-clear" @click.prevent="searchTerm = ''" aria-label="Limpiar búsqueda">X</button>
+        </div>
+      </div>
+
       <!-- Filtros de categoría -->
       <div class="category-filters">
         <button
@@ -284,6 +303,8 @@ watch(availableProducts, (newProducts) => {
 
 // Estado local
 const selectedCategory = ref('Todos')
+// Término de búsqueda libre
+const searchTerm = ref('')
 
 // Estado para el modal
 const showModal = ref(false)
@@ -380,35 +401,37 @@ const categoryOptions = computed(() => {
 
 // Productos filtrados
 const filteredProducts = computed(() => {
-  if (selectedCategory.value === 'Todos') {
-    return products.value
-      .filter(p => p.status === 'available' || p.status === 'coming-soon')
-      .map(p => ({
-        ...p,
-        category: getCategoryById(p.category)?.name || 'Sin categoría',
-        inStock: p.status === 'available'
-      }))
-      .sort((a, b) => {
-        // Primero los disponibles (available), luego los próximamente (coming-soon)
-        if (a.status === 'available' && b.status !== 'available') return -1
-        if (a.status !== 'available' && b.status === 'available') return 1
-        return 0
-      })
-  }
+  const term = searchTerm.value.trim().toLowerCase()
 
-  return products.value
-    .filter(p => getCategoryById(p.category)?.name === selectedCategory.value && (p.status === 'available' || p.status === 'coming-soon'))
-    .map(p => ({
+  const mapAndEnhance = (list: ProductType[]) => list
+    .map((p: ProductType) => ({
       ...p,
       category: getCategoryById(p.category)?.name || 'Sin categoría',
       inStock: p.status === 'available'
     }))
-    .sort((a, b) => {
+    .sort((a: ProductType, b: ProductType) => {
       // Primero los disponibles (available), luego los próximamente (coming-soon)
       if (a.status === 'available' && b.status !== 'available') return -1
       if (a.status !== 'available' && b.status === 'available') return 1
       return 0
     })
+
+  let baseList = []
+  if (selectedCategory.value === 'Todos') {
+    baseList = products.value.filter(p => p.status === 'available' || p.status === 'coming-soon')
+  } else {
+    baseList = products.value.filter(p => getCategoryById(p.category)?.name === selectedCategory.value && (p.status === 'available' || p.status === 'coming-soon'))
+  }
+
+  // Si hay término de búsqueda, filtrar SÓLO por el nombre (título)
+  if (term) {
+    baseList = baseList.filter(p => {
+      const name = String(p.name || '').toLowerCase()
+      return name.includes(term)
+    })
+  }
+
+  return mapAndEnhance(baseList)
 })
 
 // Colores de Apple predeterminados (incluye variantes en inglés y español)
@@ -487,6 +510,89 @@ const getColorHex = (colorName: string): string => {
   color: #666;
   max-width: 600px;
   margin: 0 auto;
+}
+
+/* Barra de búsqueda */
+.search-bar {
+  display: flex;
+  justify-content: center;
+  margin: 1.25rem 0 2rem;
+  position: relative;
+}
+
+.search-input-wrapper{
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+}
+
+.search-icon{
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9aa4ae;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.875rem 3.5rem 0.875rem 2.75rem;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  background: #f5f5f7;
+  font-size: 1rem;
+  color: var(--brand-primary);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.search-input:focus {
+  background: white;
+  border-color: var(--brand-success);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.search-input:hover {
+  background: #ebebed;
+  border-color: #b8b8b8;
+}
+
+.search-input::placeholder {
+  color: #6b7280;
+  opacity: 1;
+}
+
+.search-clear {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.08);
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #444;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.search-clear:hover {
+  background: rgba(0,0,0,0.12);
+  transform: translateY(-50%) scale(1.05);
+}
+
+@media (max-width: 768px){
+  .search-input { max-width: 92%; }
+  .search-input-wrapper{ max-width: 92%; margin: 0 auto; }
 }
 
 /* Filtros */
@@ -968,7 +1074,7 @@ const getColorHex = (colorName: string): string => {
 /* Carrito flotante */
 .floating-cart {
   position: fixed;
-  bottom: 600px;
+  bottom: 500px;
   right: 20px;
   background: var(--brand-success);
   color: white;
