@@ -1,46 +1,11 @@
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import { categoryService } from '@/services/api'
 import type { Category, CreateCategoryRequest } from '@/types/CategoryType'
 
-// Función para cargar categorías desde localStorage
-const loadCategoriesFromStorage = (): Category[] => {
-  try {
-    const storedCategories = localStorage.getItem('appstorepro_categories')
-    if (storedCategories) {
-      const parsed = JSON.parse(storedCategories) as Category[]
-      // Convertir las fechas de string a Date
-      return parsed.map((c) => ({
-        ...c,
-        createdAt: new Date(c.createdAt),
-        updatedAt: c.updatedAt ? new Date(c.updatedAt) : undefined
-      }))
-    }
-  } catch (error) {
-    console.error('Error al cargar categorías desde localStorage:', error)
-  }
-  return []
-}
-
-// Función para guardar categorías en localStorage
-const saveCategoriesToStorage = (items: Category[]) => {
-  try {
-    localStorage.setItem('appstorepro_categories', JSON.stringify(items))
-  } catch (error) {
-    console.error('Error al guardar categorías en localStorage:', error)
-  }
-}
-
-// Estado global de categorías (inicializado desde localStorage)
-const categories = ref<Category[]>(loadCategoriesFromStorage())
+// Estado global de categorías (inicializado vacío, se cargará desde el backend)
+const categories = ref<Category[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
-
-// Observar cambios en categorías y guardar automáticamente
-watch(categories, (newCategories) => {
-  if (newCategories.length > 0) {
-    saveCategoriesToStorage(newCategories)
-  }
-}, { deep: true })
 
 // Normaliza cualquier forma entrante de categoría (id numérico o string, fechas string) al tipo Category
 function normalizeCategory(input: unknown): Category {
@@ -70,13 +35,7 @@ function normalizeCategory(input: unknown): Category {
 
 export function useCategories() {
   // Función para cargar todas las categorías con filtros opcionales
-  const loadCategories = async (filters?: { name?: string; description?: string }, forceRefresh = false) => {
-    // Si hay categorías en caché y no se fuerza el refresh, usar el caché
-    if (!forceRefresh && categories.value.length > 0) {
-      console.log('📦 [loadCategories] Usando categorías desde caché:', categories.value.length)
-      return { success: true, data: categories.value }
-    }
-
+  const loadCategories = async (filters?: { name?: string; description?: string }) => {
     loading.value = true
     error.value = null
 
