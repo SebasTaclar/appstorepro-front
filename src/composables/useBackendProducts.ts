@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { productService } from '@/services/api'
 import type {
   Product,
@@ -6,46 +6,10 @@ import type {
   UpdateProductRequest
 } from '@/types/ProductType'
 
-// Función para cargar productos desde localStorage
-const loadProductsFromStorage = (): Product[] => {
-  try {
-    const storedProducts = localStorage.getItem('appstorepro_products')
-    if (storedProducts) {
-      const parsed = JSON.parse(storedProducts) as Product[]
-      // Convertir las fechas de string a Date
-      return parsed.map((p) => ({
-        ...p,
-        createdAt: new Date(p.createdAt),
-        updatedAt: p.updatedAt ? new Date(p.updatedAt) : undefined
-      }))
-    }
-  } catch (error) {
-    console.error('Error al cargar productos desde localStorage:', error)
-  }
-  return []
-}
-
-// Función para guardar productos en localStorage
-const saveProductsToStorage = (items: Product[]) => {
-  try {
-    localStorage.setItem('appstorepro_products', JSON.stringify(items))
-    localStorage.setItem('appstorepro_products_timestamp', Date.now().toString())
-  } catch (error) {
-    console.error('Error al guardar productos en localStorage:', error)
-  }
-}
-
-// Estado global de productos del backend (inicializado desde localStorage)
-const products = ref<Product[]>(loadProductsFromStorage())
+// Estado global de productos del backend (inicializado vacío)
+const products = ref<Product[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
-
-// Observar cambios en productos y guardar automáticamente
-watch(products, (newProducts) => {
-  if (newProducts.length > 0) {
-    saveProductsToStorage(newProducts)
-  }
-}, { deep: true })
 
 // Normaliza la respuesta del backend al tipo Product del frontend
 function normalizeProduct(input: unknown): Product {
@@ -139,13 +103,7 @@ export function useBackendProducts() {
     name?: string
     categoryId?: number
     showcase?: boolean
-  }, forceRefresh = false) => {
-    // Si hay productos en caché y no se fuerza el refresh, usar el caché
-    if (!forceRefresh && products.value.length > 0) {
-      console.log('📦 [loadProducts] Usando productos desde caché:', products.value.length)
-      return { success: true, data: products.value }
-    }
-
+  }) => {
     loading.value = true
     error.value = null
 

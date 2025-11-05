@@ -1400,7 +1400,7 @@ onUnmounted(() => {
 /* === CARRITO FLOTANTE === */
 .floating-cart {
   position: fixed;
-  bottom: 600px;
+  bottom: 500px;
   right: 20px;
   background: var(--brand-success);
   color: white;
