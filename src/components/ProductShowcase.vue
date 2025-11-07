@@ -75,7 +75,7 @@
 
         <!-- Carrusel Watch & Accesorios -->
         <div v-if="watchAccessoriesProducts.length > 0" class="carousel-section">
-          <h3 class="carousel-category-title">Watch & Accesorios</h3>
+          <h3 class="carousel-category-title">Watch, AirPods & Accesorios</h3>
           <div class="carousel-wrapper">
             <div class="carousel-track">
               <div
