@@ -59,6 +59,12 @@ const router = createRouter({
     },
 
     {
+      path: '/airpods',
+      name: 'airpods',
+      component: () => import('../views/AirPodsPage.vue'),
+    },
+
+    {
       path: '/admin/products',
       name: 'admin-products',
       component: () => import('../views/AdminDashboardNew.vue'),

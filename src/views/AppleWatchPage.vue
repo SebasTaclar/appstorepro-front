@@ -369,7 +369,7 @@ import type { Product } from '@/composables/useProducts'
 
 const router = useRouter()
 const { regularProducts, loadProducts, showcaseProducts, loadShowcaseProducts } = useProducts()
-const { categories } = useCategories()
+const { categories, loadCategories } = useCategories()
 
 // Usar el composable del carrito
 const {
@@ -587,11 +587,12 @@ const getColorHex = (colorName: string): string => {
 onMounted(async () => {
   try {
     isLoadingProducts.value = true
+    await loadCategories()
     await loadProducts()
     await loadShowcaseProducts()
     startAutoplay()
   } catch (error) {
-    console.error('Error cargando productos de Apple Watch:', error)
+    console.error('Error cargando datos de Apple Watch:', error)
   } finally {
     isLoadingProducts.value = false
   }

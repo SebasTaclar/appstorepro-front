@@ -13,11 +13,12 @@
 
       <!-- Navegación principal -->
       <div class="nav-menu desktop-nav">
-        <RouterLink to="/iphone" class="nav-link" @click="closeMobileMenu">iPhone</RouterLink>
-        <RouterLink to="/mac" class="nav-link" @click="closeMobileMenu">Mac</RouterLink>
-        <RouterLink to="/ipad" class="nav-link" @click="closeMobileMenu">iPad</RouterLink>
-        <RouterLink to="/watch" class="nav-link" @click="closeMobileMenu">Watch</RouterLink>
-        <RouterLink to="/accesorios" class="nav-link" @click="closeMobileMenu">Accesorios</RouterLink>
+        <RouterLink to="/iphone" class="nav-link" :class="{ active: isCurrentRoute('/iphone') }" @click="closeMobileMenu">iPhone</RouterLink>
+        <RouterLink to="/mac" class="nav-link" :class="{ active: isCurrentRoute('/mac') }" @click="closeMobileMenu">Mac</RouterLink>
+        <RouterLink to="/ipad" class="nav-link" :class="{ active: isCurrentRoute('/ipad') }" @click="closeMobileMenu">iPad</RouterLink>
+        <RouterLink to="/watch" class="nav-link" :class="{ active: isCurrentRoute('/watch') }" @click="closeMobileMenu">Watch</RouterLink>
+        <RouterLink to="/airpods" class="nav-link" :class="{ active: isCurrentRoute('/airpods') }" @click="closeMobileMenu">AirPods</RouterLink>
+        <RouterLink to="/accesorios" class="nav-link" :class="{ active: isCurrentRoute('/accesorios') }" @click="closeMobileMenu">Accesorios</RouterLink>
         <!-- <a href="#products" class="nav-link" @click="closeMobileMenu(); scrollToProductStore()">Compra Ahora</a>
         <a href="#contact" class="nav-link" @click="closeMobileMenu(); scrollToContact()">Contáctanos</a> -->
       </div>
@@ -43,11 +44,12 @@
       <div class="mobile-menu" :class="{ 'active': isMobileMenuOpen }">
         <div class="mobile-menu-content">
           <div class="mobile-nav-links">
-            <RouterLink to="/iphone" class="mobile-link" @click="closeMobileMenu">iPhone</RouterLink>
-            <RouterLink to="/mac" class="mobile-link" @click="closeMobileMenu">Mac</RouterLink>
-            <RouterLink to="/ipad" class="mobile-link" @click="closeMobileMenu">iPad</RouterLink>
-            <RouterLink to="/watch" class="mobile-link" @click="closeMobileMenu">Watch</RouterLink>
-            <RouterLink to="/accesorios" class="mobile-link" @click="closeMobileMenu">Accesorios</RouterLink>
+            <RouterLink to="/iphone" class="mobile-link" :class="{ active: isCurrentRoute('/iphone') }" @click="closeMobileMenu">iPhone</RouterLink>
+            <RouterLink to="/mac" class="mobile-link" :class="{ active: isCurrentRoute('/mac') }" @click="closeMobileMenu">Mac</RouterLink>
+            <RouterLink to="/ipad" class="mobile-link" :class="{ active: isCurrentRoute('/ipad') }" @click="closeMobileMenu">iPad</RouterLink>
+            <RouterLink to="/watch" class="mobile-link" :class="{ active: isCurrentRoute('/watch') }" @click="closeMobileMenu">Watch</RouterLink>
+            <RouterLink to="/airpods" class="mobile-link" :class="{ active: isCurrentRoute('/airpods') }" @click="closeMobileMenu">AirPods</RouterLink>
+            <RouterLink to="/accesorios" class="mobile-link" :class="{ active: isCurrentRoute('/accesorios') }" @click="closeMobileMenu">Accesorios</RouterLink>
             <!-- <a href="#products" class="mobile-link" @click="closeMobileMenu(); scrollToProductStore()">Compra Ahora</a>
             <a href="#contact" class="mobile-link" @click="closeMobileMenu(); scrollToContact()">Contáctanos</a> -->
           </div>
@@ -88,8 +90,16 @@ const isLoggedIn = ref(false);
 const username = ref('');
 const isMobileMenuOpen = ref(false);
 
+// Router hooks
+const currentRoute = useRoute();
+
 // Verificar si el usuario es administrador
 const isAdmin = computed(() => authService.isAdmin());
+
+// Función para verificar la ruta actual
+const isCurrentRoute = (path: string): boolean => {
+  return currentRoute.path === path;
+};
 
 // Funciones para el menú hamburguesa
 const toggleMobileMenu = () => {
@@ -569,6 +579,38 @@ watch(route, () => {
 /* Quitar subrayado del link principal */
 .link-navbar {
   text-decoration: none !important;
+}
+
+/* Estilos para enlaces activos */
+.nav-link.active,
+.mobile-link.active {
+  color: #0071e3;
+  font-weight: 600;
+  position: relative;
+}
+
+.nav-link.active::after,
+.mobile-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #0071e3;
+  border-radius: 2px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scaleX(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
 }
 
 .link-navbar:hover {

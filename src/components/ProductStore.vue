@@ -165,10 +165,10 @@
     <div v-if="showModal" class="modal-overlay" @click="closeModal">
       <div class="modal-content" @click.stop>
         <button class="modal-close floating" @click="closeModal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="m18 6-12 12"/>
-              <path d="m6 6 12 12"/>
-            </svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m18 6-12 12"/>
+            <path d="m6 6 12 12"/>
+          </svg>
         </button>
         <div class="modal-body">
           <div class="modal-image">
@@ -193,6 +193,7 @@
               ></button>
             </div>
           </div>
+
           <div class="modal-info">
             <h2 class="modal-title">{{ selectedProduct?.name }}</h2>
             <div class="modal-category">
@@ -201,14 +202,12 @@
             <p class="modal-description">
               {{ selectedProduct?.description }}
             </p>
+
             <div class="modal-price">
               <span class="modal-current-price">${{ selectedProduct?.price?.toLocaleString() }}</span>
-              <span v-if="selectedProduct?.originalPrice" class="modal-original-price">
-                ${{ selectedProduct?.originalPrice?.toLocaleString() }}
-              </span>
+              <span v-if="selectedProduct?.originalPrice" class="modal-original-price">${{ selectedProduct?.originalPrice?.toLocaleString() }}</span>
             </div>
 
-            <!-- Selector de colores en el modal -->
             <div v-if="selectedProduct?.colors && selectedProduct.colors.length > 0" class="modal-colors">
               <h4>Seleccionar color:</h4>
               <div class="color-options">
@@ -218,8 +217,6 @@
                   class="color-option"
                   :class="{ active: modalSelectedColor === colorName }"
                   @click="modalSelectedColor = colorName"
-                  :title="colorName"
-                  :aria-label="'Color ' + colorName"
                 >
                   <div
                     class="color-circle"
@@ -230,27 +227,375 @@
               </div>
             </div>
 
-            <!-- Estado del producto -->
             <div class="modal-status">
               <span :class="['status-badge', getStatusClass(selectedProduct?.status || '')]">
                 {{ getStatusText(selectedProduct?.status || '') }}
               </span>
             </div>
 
-            <!-- Botón agregar al carrito -->
             <button
               @click="addToCartFromModal"
               :disabled="selectedProduct?.status !== 'available' || (selectedProduct?.colors && selectedProduct.colors.length > 0 && !modalSelectedColor)"
               class="modal-add-to-cart"
             >
-                            {{ selectedProduct?.status === 'available' ? 'Agregar al carrito' : 'No disponible' }}
+              {{ selectedProduct?.status === 'available' ? 'Agregar al carrito' : 'No disponible' }}
             </button>
           </div>
         </div>
       </div>
     </div>
   </section>
-</template><script setup lang="ts">
+</template>
+
+<style scoped>
+.product-store {
+  padding: 3rem 0;
+  background: linear-gradient(135deg, #dad1d1 0%, #f3f0f0 100%);
+  position: relative;
+}
+.product-store {
+  padding: 3rem 0;
+  background: linear-gradient(135deg, #dad1d1 0%, #f3f0f0 100%);
+  position: relative;
+}
+
+/* Estilos del modal oscuro */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgb(0, 0, 0);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: #000000;
+  width: 95%;
+  max-width: 1100px;
+  max-height: 85vh;
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.modal-body {
+  display: flex;
+  padding: 0;
+  height: 100%;
+  color: white;
+}
+
+.modal-main-content {
+  display: flex;
+  width: 100%;
+}
+
+.modal-image {
+  flex: 1.2;
+  background: linear-gradient(145deg, #1e1e1e 0%, #252525 100%);
+  border-right: 1px solid #2f2f2f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-image img {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+}
+
+.modal-details {
+  flex: 1;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.modal-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+}
+
+.modal-category {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  margin: 0.5rem 0 1rem;
+}
+
+.modal-description {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+.modal-price {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #0A84FF;
+  margin: 1.5rem 0;
+}
+
+.modal-colors h4 {
+  color: white;
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  font-weight: normal;
+}
+
+.color-options {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.color-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.color-option:hover {
+  transform: scale(1.05);
+}
+
+.color-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid white;
+  transition: all 0.2s ease;
+}
+
+.color-option.active .color-circle {
+  border: 2px solid #26F7D7;
+}
+
+.color-name {
+  font-size: 0.75rem;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.color-name {
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 500;
+  background: transparent;
+}
+
+.status-available {
+  color: #30D158;
+  background: rgba(48, 209, 88, 0.1);
+}
+
+.modal-add-to-cart {
+  margin-top: 2rem;
+  width: 100%;
+  padding: 0.875rem;
+  background: #2C2C2E;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-add-to-cart:hover:not(:disabled) {
+  background: #3A3A3C;
+}
+
+.modal-add-to-cart:disabled {
+  background: #2C2C2E;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Estilos para móvil */
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 0;
+  }
+
+  /* El contenedor del modal debe controlar el scroll en móvil */
+  .modal-content {
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+    padding: 0;
+    background: #000;
+    overflow-y: auto; /* scroll para TODO el modal */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Mostrar como grid (igual que AppleWatchPage) y dejar que el contenido fluya desde la parte superior
+     La imagen formará parte del flujo y se desplazará junto al resto del contenido */
+  .modal-body {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .modal-close.floating {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1000;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.1);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    backdrop-filter: blur(6px);
+  }
+
+  .modal-close.floating svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .modal-image {
+    width: calc(100% - 2rem);
+    background: #fff;
+    border-radius: 8px;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem auto; /* centrar horizontalmente en móvil */
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+  }
+
+  .modal-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* Asegurar que el contenido interno también esté centrado */
+  .modal-image .image-gallery,
+  .modal-image img {
+    margin: auto;
+  }
+
+  .modal-info {
+    padding: 0 1rem;
+  }
+
+  .modal-title {
+    font-size: 2rem;
+    line-height: 1.2;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .modal-category {
+    color: #999;
+    font-size: 0.875rem;
+    margin: 0.25rem 0 1rem;
+  }
+
+  .modal-description {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 1.5rem;
+  }
+
+  .modal-price {
+    font-size: 2rem;
+    color: #0A84FF;
+    margin: 1.5rem 0;
+  }
+
+  .color-options {
+    gap: 2rem;
+    justify-content: flex-start;
+    margin: 0.5rem 0 2rem;
+  }
+
+  .color-option {
+    align-items: center;
+  }
+
+  .color-circle {
+    width: 24px;
+    height: 24px;
+    border: 2px solid white;
+  }
+
+  .color-name {
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+    text-transform: uppercase;
+  }
+
+  .modal-status {
+    margin: 1rem 0;
+  }
+
+  .modal-add-to-cart {
+    margin: 1rem 0 2rem;
+    width: 100%;
+    background: #2C2C2E;
+    border-radius: 8px;
+    height: 48px;
+    font-size: 0.9375rem;
+  }
+}
+</style><script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCart } from '@/composables/useCart'
@@ -804,6 +1149,8 @@ const getColorHex = (colorName: string): string => {
   margin-bottom: 0.8rem;
   line-height: 1.4;
   font-size: 0.9rem;
+  text-align: justify;
+  hyphens: auto;
 }
 
 /* Colores del producto */
@@ -1549,7 +1896,6 @@ const getColorHex = (colorName: string): string => {
 .modal-image {
   flex: 1;
   position: relative;
-  background: #f8f9fa;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1681,7 +2027,6 @@ const getColorHex = (colorName: string): string => {
   border-radius: 16px;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: #f8f9fa;
 }
 
 .color-option:hover {
@@ -1995,17 +2340,80 @@ const getColorHex = (colorName: string): string => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.color-name {
-  font-size: 0.8rem;
-  color: #666;
-  text-align: center;
-}
+  .color-name {
+    font-size: 0.8rem;
+    color: #666;
+    text-align: center;
+  }
 
-.modal-status {
-  margin-bottom: 1.5rem;
-}
+  .modal-status {
+    margin-bottom: 1.5rem;
+  }
 
-.modal-add-to-cart {
+  .image-navigation {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 1rem;
+    pointer-events: none;
+  }
+
+  .nav-btn {
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    pointer-events: auto;
+  }
+
+  .nav-btn:hover {
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  .nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .image-thumbnails {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    overflow-x: auto;
+    padding: 0.5rem;
+    scrollbar-width: thin;
+  }
+
+  .thumbnail {
+    width: 60px;
+    height: 60px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .thumbnail.active {
+    border-color: var(--brand-success);
+  }
+
+  .thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }.modal-add-to-cart {
   width: 100%;
   padding: 1rem 2rem;
   background: linear-gradient(135deg, var(--brand-success) 0%, #0d9466 100%);
@@ -2094,6 +2502,428 @@ const getColorHex = (colorName: string): string => {
     font-size: 0.8rem;
     padding: 0.2rem;
     min-width: 20px;
+  }
+}
+
+/* === MODAL DEL PRODUCTO (copiado de AppleWatchPage) === */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+  padding: 20px;
+}
+
+.modal-content {
+  background: #1d1d1f;
+  border-radius: 20px;
+  max-width: 1000px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-close.floating {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f5f5f7;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+}
+
+.modal-close.floating:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  padding: 40px;
+}
+
+.modal-image {
+  position: relative;
+}
+
+.image-gallery {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.image-gallery img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 2px solid transparent;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.image-gallery img:hover {
+  transform: scale(1.05);
+}
+
+.image-gallery img.active {
+  border-color: #0071e3;
+  box-shadow: 0 0 20px rgba(0, 113, 227, 0.4);
+}
+
+.image-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.image-dots button {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.3s;
+  padding: 0;
+}
+
+.image-dots button:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.image-dots button.active {
+  background: #0071e3;
+  width: 24px;
+  border-radius: 4px;
+}
+
+.modal-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modal-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0;
+  color: #f5f5f7;
+  letter-spacing: -0.5px;
+}
+
+.modal-category {
+  color: #86868b;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.modal-description {
+  color: #a1a1a6;
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.modal-price {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.modal-current-price {
+  font-size: 32px;
+  font-weight: 700;
+  color: #0071e3;
+}
+
+.modal-original-price {
+  font-size: 20px;
+  color: #86868b;
+  text-decoration: line-through;
+}
+
+.modal-colors {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 20px 0;
+}
+
+.modal-colors h4 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f5f5f7;
+}
+
+.color-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.color-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.color-option:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.color-option.active .color-circle {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.3);
+}
+
+.color-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.color-name {
+  font-size: 12px;
+  color: #a1a1a6;
+  text-align: center;
+  max-width: 80px;
+}
+
+.modal-status {
+  display: flex;
+  gap: 8px;
+}
+
+.status-badge {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-available {
+  background: rgba(52, 199, 89, 0.15);
+  color: #34c759;
+  border: 1px solid rgba(52, 199, 89, 0.3);
+}
+
+.status-coming-soon {
+  background: rgba(255, 204, 0, 0.15);
+  color: #ffcc00;
+  border: 1px solid rgba(255, 204, 0, 0.3);
+}
+
+.status-out-of-stock {
+  background: rgba(255, 59, 48, 0.15);
+  color: #ff3b30;
+  border: 1px solid rgba(255, 59, 48, 0.3);
+}
+
+.status-unavailable {
+  background: rgba(142, 142, 147, 0.15);
+  color: #8e8e93;
+  border: 1px solid rgba(142, 142, 147, 0.3);
+}
+
+.modal-add-to-cart {
+  background: linear-gradient(135deg, #0071e3 0%, #0051a8 100%);
+  color: white;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(0, 113, 227, 0.3);
+  margin-top: auto;
+}
+
+.modal-add-to-cart:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(0, 113, 227, 0.4);
+  transform: translateY(-2px);
+}
+
+.modal-add-to-cart:disabled {
+  background: rgba(142, 142, 147, 0.2);
+  color: #8e8e93;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Responsive para modal de producto */
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 0;
+  }
+
+  .modal-content {
+    width: 100%;
+    height: 100vh;
+    max-height: none;
+    border-radius: 0;
+    padding: 0;
+    overflow-y: auto;
+  }
+
+  .modal-body {
+    grid-template-columns: 1fr;
+    padding: 20px;
+    gap: 24px;
+    min-height: 100%;
+  }
+
+  .modal-title {
+    font-size: 24px;
+  }
+
+  .modal-current-price {
+    font-size: 24px;
+  }
+
+  .floating-cart {
+    bottom: 350px;
+    right: 8px;
+    padding: 0.75rem;
+    width: 55px;
+    height: 55px;
+  }
+
+  .cart-tooltip {
+    display: none;
+  }
+
+  .floating-cart:hover .cart-tooltip,
+  .floating-cart:active .cart-tooltip {
+    display: block;
+  }
+
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .cart-overlay {
+    padding: 0.5rem;
+  }
+
+  .cart-modal {
+    width: 95%;
+    max-height: 95vh;
+    max-width: none;
+    margin: 0;
+    border-radius: 15px;
+  }
+
+  .cart-header {
+    padding: 1.5rem 1rem 1rem;
+  }
+
+  .cart-header h3 {
+    font-size: 1.3rem;
+  }
+
+  .cart-content {
+    padding: 1rem;
+  }
+
+  .cart-item {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .cart-item img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .item-details h4 {
+    font-size: 0.9rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .item-category {
+    font-size: 0.8rem;
+  }
+
+  .item-color {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.4rem;
+  }
+
+  .item-price {
+    font-size: 0.9rem;
+    margin-top: 0.3rem;
+  }
+
+  .cart-footer {
+    padding: 1rem;
+  }
+
+  .cart-total-display {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+
+  .cart-actions {
+    flex-direction: column;
+  }
+
+  .quantity-controls {
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .quantity-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+
+  .quantity-controls span {
+    font-size: 0.9rem;
+    padding: 0.3rem;
+    min-width: 24px;
   }
 }
 </style>
