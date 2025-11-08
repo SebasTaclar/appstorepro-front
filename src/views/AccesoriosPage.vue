@@ -366,10 +366,31 @@ import { useProducts } from '@/composables/useProducts'
 import { useCategories } from '@/composables/useCategories'
 import { useCart } from '@/composables/useCart'
 import type { Product } from '@/composables/useProducts'
+import { useHead } from '@vueuse/head'
 
 const router = useRouter()
 const { regularProducts, loadProducts, showcaseProducts, loadShowcaseProducts } = useProducts()
 const { categories, loadCategories } = useCategories()
+
+
+
+
+useHead({
+  title: 'Accesorios Apple Originales | Apple Store Pro',
+  meta: [
+    {
+      name: 'description',
+      content: 'Compra y descubre nuestra colección de accesorios originales Apple: Apple Pencil, teclados, airtag y más. Tienda oficial Apple Store Pro Colombia.'
+    },
+    { property: 'og:title', content: 'Accesorios Apple Originales | Apple Store Pro' },
+    { property: 'og:description', content: 'Compra y descubre nuestra colección de accesorios originales Apple: Apple Pencil, teclados, airtag y más. Tienda oficial Apple Store Pro Colombia.' },
+    { property: 'og:image', content: 'https://www.mistorepro.com/images/accesorios.jpg' },
+    { property: 'og:url', content: 'https://www.mistorepro.com/accesorios' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:image', content: 'https://www.mistorepro.com/images/accesorios.jpg' }
+  ]
+})
+
 
 // Usar el composable del carrito
 const {

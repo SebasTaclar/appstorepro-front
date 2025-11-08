@@ -265,6 +265,26 @@ import { useCart } from '@/composables/useCart'
 import type { Product } from '@/composables/useProducts'
 import { useRouter } from 'vue-router'
 
+
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'AirPods Pro y AirPods Max y más | Apple Store Pro',
+  meta: [
+    {
+      name: 'description',
+      content: 'Descubre los AirPods Pro con cancelación de ruido y los AirPods Max. Audio de alta fidelidad y diseño premium. Tienda oficial Apple Store Pro Colombia.'
+    },
+    { property: 'og:title', content: 'AirPods Pro y AirPods Max | Apple Store Pro' },
+    { property: 'og:description', content: 'Descubre y compra los AirPods Pro con cancelación de ruido y los AirPods Max. Audio de alta fidelidad y diseño premium. Tienda oficial Apple Store Pro Colombia.' },
+    { property: 'og:image', content: 'https://www.mistorepro.com/images/airpods.jpg' },
+    { property: 'og:url', content: 'https://www.mistorepro.com/airpods' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:image', content: 'https://www.mistorepro.com/images/airpods.jpg' }
+  ]
+})
+
+
 const router = useRouter()
 const { regularProducts, loadProducts, showcaseProducts, loadShowcaseProducts } = useProducts()
 const { categories, loadCategories } = useCategories()
