@@ -235,11 +235,11 @@
               </div>
               <div class="item-controls">
                 <div class="quantity-controls">
-                  <button @click="updateQuantity(item.id, item.quantity - 1)" class="quantity-btn minus">-</button>
+                  <button @click="updateQuantity(item.id, item.quantity - 1, item.selectedColor)" class="quantity-btn minus">-</button>
                   <span>{{ item.quantity }}</span>
-                  <button @click="updateQuantity(item.id, item.quantity + 1)" class="quantity-btn plus">+</button>
+                  <button @click="updateQuantity(item.id, item.quantity + 1, item.selectedColor)" class="quantity-btn plus">+</button>
                 </div>
-                <button @click="removeFromCart(item.id)" class="remove-btn">
+                <button @click="removeFromCart(item.id, item.selectedColor)" class="remove-btn">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M3 6h18"/>
                     <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>

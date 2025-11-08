@@ -27,7 +27,7 @@ Allow: /terms
 Crawl-delay: 1
 
 # Sitemap
-Sitemap: https://mistorepro.com/sitemap.xml
+Sitemap: https://www.mistorepro.com/sitemap.xml
 
 # Motores de búsqueda específicos
 User-agent: Googlebot

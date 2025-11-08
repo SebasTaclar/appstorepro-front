@@ -83,19 +83,23 @@ export function useCart() {
   }
 
   // Remover producto del carrito
-  const removeFromCart = (productId: string) => {
-    const index = cartItems.value.findIndex(item => item.id === productId)
+  const removeFromCart = (productId: string, selectedColor?: string) => {
+    const index = cartItems.value.findIndex(item =>
+      item.id === productId && item.selectedColor === selectedColor
+    )
     if (index > -1) {
       cartItems.value.splice(index, 1)
     }
   }
 
   // Actualizar cantidad de un producto
-  const updateQuantity = (productId: string, quantity: number) => {
-    const item = cartItems.value.find(item => item.id === productId)
+  const updateQuantity = (productId: string, quantity: number, selectedColor?: string) => {
+    const item = cartItems.value.find(item =>
+      item.id === productId && item.selectedColor === selectedColor
+    )
     if (item) {
       if (quantity <= 0) {
-        removeFromCart(productId)
+        removeFromCart(productId, selectedColor)
       } else {
         item.quantity = quantity
       }
