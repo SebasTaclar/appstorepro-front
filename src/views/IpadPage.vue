@@ -366,6 +366,26 @@ import { useCategories } from '@/composables/useCategories'
 import { useCart } from '@/composables/useCart'
 import type { Product } from '@/composables/useProducts'
 
+
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'iPad Pro M3 y iPad Air | Apple Store Pro',
+  meta: [
+    {
+      name: 'description',
+      content: 'Explora la nueva línea de iPads con el potente iPad Pro y el versátil iPad Air. Tienda oficial Apple Store Pro Colombia.'
+    },
+    { property: 'og:title', content: 'ipad, iPad Pro y iPad Air | Apple Store Pro' },
+    { property: 'og:description', content: 'Explora la nueva línea de iPads con el potente iPad Pro y el versátil iPad Air. Tienda oficial Apple Store Pro Colombia.' },
+    { property: 'og:image', content: 'https://www.mistorepro.com/images/ipadpro.jpg' },
+    { property: 'og:url', content: 'https://www.mistorepro.com/ipad' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:image', content: 'https://www.mistorepro.com/images/ipadpro.jpg' }
+  ]
+})
+
+
 const router = useRouter()
 const { regularProducts, loadProducts, showcaseProducts, loadShowcaseProducts } = useProducts()
 const { categories, loadCategories } = useCategories()

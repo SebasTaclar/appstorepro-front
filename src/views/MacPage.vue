@@ -295,6 +295,25 @@ import { useCategories } from '@/composables/useCategories'
 import { useCart } from '@/composables/useCart'
 import type { Product } from '@/composables/useProducts'
 
+
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'MacBook Air, MacBook Pro | Apple Store Pro',
+  meta: [
+    {
+      name: 'description',
+      content: 'Descubre la potencia del nuevo MacBook Air, MacBook Pro y mucho más. Tienda oficial Apple Store Pro Colombia.'
+    },
+    { property: 'og:title', content: 'MacBook Air, MacBook Pro | Apple Store Pro' },
+    { property: 'og:description', content: 'Descubre la potencia del nuevo MacBook Air, MacBook Pro y mucho más. Tienda oficial Apple Store Pro Colombia.' },
+    { property: 'og:image', content: 'https://www.mistorepro.com/images/macbookpro.jpg' },
+    { property: 'og:url', content: 'https://www.mistorepro.com/mac' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:image', content: 'https://www.mistorepro.com/images/macbookpro.jpg' }
+  ]
+})
+
 const router = useRouter()
 const { regularProducts, loadProducts, showcaseProducts, loadShowcaseProducts } = useProducts()
 const { categories, loadCategories } = useCategories()

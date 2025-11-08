@@ -1,4 +1,6 @@
 <template>
+  <title>iPhone 17 pro, 17 pro max y mucho más | Apple Store Pro</title>
+  <meta name="description" content="Compra iPhone 17, iPhone 16, iPhone 15, iPhone 14 y muchos más en Apple Store Pro. Tecnología Apple original con garantía y precios especiales.">
   <div class="iphone-page">
     <!-- Hero Banner Section con Carrusel -->
     <section class="hero-banner">
@@ -365,10 +367,27 @@ import { useProducts } from '@/composables/useProducts'
 import { useCategories } from '@/composables/useCategories'
 import { useCart } from '@/composables/useCart'
 import type { Product } from '@/composables/useProducts'
+import { useHead } from '@vueuse/head'
 
 const router = useRouter()
 const { regularProducts, loadProducts, showcaseProducts, loadShowcaseProducts } = useProducts()
 const { categories, loadCategories } = useCategories()
+
+useHead({
+  title: 'iPhone 17 Pro, 17 Pro Max y mucho más | Apple Store Pro',
+  meta: [
+    {
+      name: 'description',
+      content: 'Compra iPhone 17, iPhone 16, iPhone 15, iPhone 14 y muchos más en Apple Store Pro. Tecnología Apple original con garantía y precios especiales.'
+    },
+    { property: 'og:title', content: 'iPhone 17 Pro, 17 Pro Max y mucho más | Apple Store Pro' },
+    { property: 'og:description', content: 'Compra iPhone 17, iPhone 16, iPhone 15, iPhone 14 y muchos más en Apple Store Pro. Tecnología Apple original con garantía y precios especiales.' },
+    { property: 'og:image', content: 'https://www.mistorepro.com/images/iphone17pro.jpg' },
+    { property: 'og:url', content: 'https://www.mistorepro.com/iphone' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:image', content: 'https://www.mistorepro.com/images/iphone17pro.jpg' }
+  ]
+})
 
 // Usar el composable del carrito
 const {

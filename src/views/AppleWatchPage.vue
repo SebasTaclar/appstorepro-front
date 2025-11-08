@@ -367,6 +367,26 @@ import { useCategories } from '@/composables/useCategories'
 import { useCart } from '@/composables/useCart'
 import type { Product } from '@/composables/useProducts'
 
+
+import { useHead } from '@vueuse/head'
+
+useHead({
+  title: 'Apple Watch Series 10, Ultra 2 y más | Apple Store Pro',
+  meta: [
+    {
+      name: 'description',
+      content: 'Encuentra lo nuevo en Apple Watch Series 10 y el robusto Apple Watch Ultra. Tienda oficial Apple Store Pro Colombia.'
+    },
+    { property: 'og:title', content: 'Apple Watch Series 10 y Ultra 2 | Apple Store Pro' },
+    { property: 'og:description', content: 'Encuentra lo nuevo en Apple Watch Series 10 y el robusto Apple Watch Ultra. Tienda oficial Apple Store Pro Colombia.' },
+    { property: 'og:image', content: 'https://www.mistorepro.com/images/applewatch.jpg' },
+    { property: 'og:url', content: 'https://www.mistorepro.com/apple-watch' },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:image', content: 'https://www.mistorepro.com/images/applewatch.jpg' }
+  ]
+})
+
+
 const router = useRouter()
 const { regularProducts, loadProducts, showcaseProducts, loadShowcaseProducts } = useProducts()
 const { categories, loadCategories } = useCategories()
